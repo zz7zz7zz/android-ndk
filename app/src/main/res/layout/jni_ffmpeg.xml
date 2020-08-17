@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="single Task"
+            android:layout_marginTop="50dp"/>
+
+
+            <Button
+                android:id="@+id/ffmpeg_getUrlProtocol"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textAllCaps="false"
+                android:text="getUrlProtocol"/>
+            <Button
+                android:id="@+id/ffmpeg_getAvformat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textAllCaps="false"
+                android:text="getAvformat"/>
+            <Button
+                android:id="@+id/ffmpeg_getAvCodec"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textAllCaps="false"
+                android:text="getAvCodec"/>
+            <Button
+                android:id="@+id/ffmpeg_getAvFilter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:textAllCaps="false"
+                android:text="getAvFilter"/>
+        <Button
+            android:id="@+id/ffmpeg_configuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="configuration"/>
+
+        <Button
+            android:id="@+id/ffmpeg_thumbnail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_thumbnail!"/>
+
+        <Button
+            android:id="@+id/ffmpeg_preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_preview"/>
+
+        <Button
+            android:id="@+id/ffmpeg_cut"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_cut"/>
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="batch Task"
+            android:layout_marginTop="50dp"/>
+
+        <Button
+            android:id="@+id/ffmpeg_thumbnail_batch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_thumbnail_batch"/>
+
+        <Button
+            android:id="@+id/ffmpeg_preview_batch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_preview_batch"/>
+
+        <Button
+            android:id="@+id/ffmpeg_cut_batch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_cut_batch"/>
+
+        <LinearLayout
+            android:id="@+id/log_parentid_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/log_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+            <Button
+                android:id="@+id/clear_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:gravity="left|center_vertical"
+                android:text="clear"/>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

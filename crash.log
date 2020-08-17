@@ -1,0 +1,35 @@
+06-03 10:53:09.537 16644 16644 I crash_dump32: performing dump of process 16466 (target tid = 16637)
+06-03 10:53:09.538 16644 16644 F DEBUG   : *** *** *** *** *** *** *** *** *** *** *** *** *** *** *** ***
+06-03 10:53:09.538 16644 16644 F DEBUG   : Build fingerprint: 'google/sdk_gphone_x86/generic_x86:8.1.0/OSM1.180201.031/5455776:userdebug/dev-keys'
+06-03 10:53:09.538 16644 16644 F DEBUG   : Revision: '0'
+06-03 10:53:09.538 16644 16644 F DEBUG   : ABI: 'x86'
+06-03 10:53:09.538 16644 16644 F DEBUG   : pid: 16466, tid: 16637, name: Thread-2  >>> com.module.ndk <<<
+06-03 10:53:09.538 16644 16644 F DEBUG   : signal 6 (SIGABRT), code -6 (SI_TKILL), fault addr --------
+06-03 10:53:09.542 16644 16644 F DEBUG   : Abort message: 'java_vm_ext.cc:534] JNI DETECTED ERROR IN APPLICATION: jmethodID was NULL'
+06-03 10:53:09.542 16644 16644 F DEBUG   :     eax 00000000  ebx 00004052  ecx 000040fd  edx 00000006
+06-03 10:53:09.542 16644 16644 F DEBUG   :     esi e68ad400  edi 00004052
+06-03 10:53:09.542 16644 16644 F DEBUG   :     xcs 00000023  xds 0000002b  xes 0000002b  xfs 0000006b  xss 0000002b
+06-03 10:53:09.542 16644 16644 F DEBUG   :     eip f5a23af0  ebp 421183e4  esp d6cfd268  flags 00000296
+06-03 10:53:09.548 16644 16644 F DEBUG   :
+06-03 10:53:09.548 16644 16644 F DEBUG   : backtrace:
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #00 pc 00000af0  [vdso:f5a23000] (__kernel_vsyscall+16)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #01 pc 0001edf8  /system/lib/libc.so (syscall+40)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #02 pc 0001f073  /system/lib/libc.so (abort+115)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #03 pc 0054d4fb  /system/lib/libart.so (art::Runtime::Abort(char const*)+603)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #04 pc 0011fb23  /system/lib/libart.so (_ZNSt3__110__function6__funcIPFvPKcENS_9allocatorIS5_EES4_EclEOS3_+35)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #05 pc 0065f2eb  /system/lib/libart.so (android::base::LogMessage::~LogMessage()+1051)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #06 pc 0039550f  /system/lib/libart.so (art::JavaVMExt::JniAbort(char const*, char const*)+1951)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #07 pc 003956c1  /system/lib/libart.so (art::JavaVMExt::JniAbortV(char const*, char const*, char*)+113)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #08 pc 0014f207  /system/lib/libart.so (art::ScopedCheck::AbortF(char const*, ...)+71)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #09 pc 0014eb2a  /system/lib/libart.so (art::ScopedCheck::CheckMethodID(_jmethodID*)+250)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #10 pc 0014dc76  /system/lib/libart.so (art::ScopedCheck::CheckPossibleHeapValue(art::ScopedObjectAccess&, char, art::JniValueType)+214)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #11 pc 0014cf85  /system/lib/libart.so (art::ScopedCheck::Check(art::ScopedObjectAccess&, bool, char const*, art::JniValueType*)+853)
+06-03 10:53:09.548 16644 16644 F DEBUG   :     #12 pc 001527be  /system/lib/libart.so (art::CheckJNI::CheckCallArgs(art::ScopedObjectAccess&, art::ScopedCheck&, _JNIEnv*, _jobject*, _jclass*, _jmethodID*, art::InvokeType, art::VarArgs const*)+190)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #13 pc 00151a15  /system/lib/libart.so (art::CheckJNI::CallMethodV(char const*, _JNIEnv*, _jobject*, _jclass*, _jmethodID*, char*, art::Primitive::Type, art::InvokeType)+933)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #14 pc 0013df2b  /system/lib/libart.so (art::CheckJNI::CallVoidMethodV(_JNIEnv*, _jobject*, _jmethodID*, char*)+75)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #15 pc 0000b3bc  /data/app/com.module.ndk-o4xumMlKqapGeC362Jwm0Q==/lib/x86/libnio_net_socket.so (_JNIEnv::CallVoidMethod(_jobject*, _jmethodID*, ...)+140)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #16 pc 0000af81  /data/app/com.module.ndk-o4xumMlKqapGeC362Jwm0Q==/lib/x86/libnio_net_socket.so (on_socket_event+481)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #17 pc 00071445  /system/lib/libc.so (__pthread_start(void*)+53)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #18 pc 000205db  /system/lib/libc.so (__start_thread+75)
+06-03 10:53:09.549 16644 16644 F DEBUG   :     #19 pc 0001ec16  /system/lib/libc.so (__bionic_clone+70)
+06-03 10:53:09.986  1549  1549 E /system/bin/tombstoned: Tombstone written to: /data/tombstones/tombstone_23

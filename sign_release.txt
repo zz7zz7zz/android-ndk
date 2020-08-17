@@ -1,0 +1,35 @@
+密钥库类型: JKS
+密钥库提供方: SUN
+
+您的密钥库包含 1 个条目
+
+别名: release
+创建日期: 2020-5-3
+条目类型: PrivateKeyEntry
+证书链长度: 1
+证书[1]:
+所有者: CN=release, OU=release, O=release, L=release, ST=release, C=release
+发布者: CN=release, OU=release, O=release, L=release, ST=release, C=release
+序列号: 55442aa5
+有效期开始日期: Sun May 03 08:25:23 CST 2020, 截止日期: Thu Apr 27 08:25:23 CST 2045
+证书指纹:
+	 MD5: 44:89:37:7B:3E:1A:14:A0:D6:C1:C4:B5:E1:51:63:A4
+	 SHA1: F9:62:60:44:35:07:07:DF:6F:67:E3:C8:14:CD:4D:8B:E1:68:02:58
+	 SHA256: EE:08:AC:46:D4:C7:31:0E:95:5A:83:F2:40:9A:21:65:B5:AE:D0:D8:69:24:F4:ED:0B:E2:C0:5D:D1:69:95:7B
+	 签名算法名称: SHA256withRSA
+	 版本: 3
+
+扩展:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: 16 F6 75 9A 4A AF 7B 5A   9B FF 19 3C 57 EA AD B7  ..u.J..Z...<W...
+0010: 34 9F DC 77                                        4..w
+]
+]
+
+
+
+*******************************************
+*******************************************

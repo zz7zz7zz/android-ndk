@@ -1,0 +1,30 @@
+密钥库类型: JKS
+密钥库提供方: SUN
+
+您的密钥库包含 1 个条目
+
+别名: debug
+创建日期: 2020-5-3
+条目类型: PrivateKeyEntry
+证书链长度: 1
+证书[1]:
+所有者: CN=debug, OU=debug, O=debug, L=debug, ST=debug, C=debug
+发布者: CN=debug, OU=debug, O=debug, L=debug, ST=debug, C=debug
+序列号: 1838cf94
+有效期开始日期: Sun May 03 08:12:34 CST 2020, 截止日期: Thu Apr 27 08:12:34 CST 2045
+证书指纹:
+	 MD5: 50:AD:25:9D:20:82:2C:0E:07:21:77:F8:4B:FB:2F:FF
+	 SHA1: DE:4C:09:D5:72:42:07:9D:09:8C:3A:B5:EC:4B:19:C5:D5:DD:4A:19
+	 SHA256: 16:07:7C:35:00:B2:7B:1B:8E:AD:FD:F6:C9:5B:DE:7E:9E:39:18:D4:75:9E:F0:CB:8F:BA:CD:1B:CA:4D:3E:D3
+	 签名算法名称: SHA256withRSA
+	 版本: 3
+
+扩展:
+
+#1: ObjectId: 2.5.29.14 Criticality=false
+SubjectKeyIdentifier [
+KeyIdentifier [
+0000: E6 F9 E8 CB A2 42 96 86   54 B7 ED F1 53 91 6A 78  .....B..T...S.jx
+0010: 47 A9 06 61                                        G..a
+]
+]

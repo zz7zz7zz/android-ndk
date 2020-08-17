@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".signature.SignatureActivity"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/sign_from_java"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left|center_vertical"
+        android:layout_weight="1.0"
+        tools:text="sign_from_java!"/>
+
+    <TextView
+        android:id="@+id/sign_verify"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="left|center_vertical"
+        android:layout_weight="1.0"
+        android:text="sign_verify!"/>
+
+</LinearLayout>

@@ -1,0 +1,12 @@
+1.keytool -list -v -keystore sign_debug.jks -storepass debugdebug
+
+2.keytool -printcert -jarfile Desktop/gpNoticias/release/noticias_gp_3.0.6.0.0.3_2019-04-16_19_23.apk
+
+3.用winrar打开待查看的apk，将其中META-INF文件夹解压出来，得到其中的CERT.RSA文件，通过
+
+keytool -printcert -file META-INF/CERT.RSA
+
+4.百度(获取手机安装的签名信息)第三方工具 https://www.jianshu.com/p/3d5be02616f4
+
+Mac 查看隐藏文件
+https://www.jianshu.com/p/2387bded78ee

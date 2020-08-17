@@ -1,0 +1,20 @@
+别名: androiddebugkey
+创建日期: 2017-7-14
+条目类型: PrivateKeyEntry
+证书链长度: 1
+证书[1]:
+所有者: C=US, O=Android, CN=Android Debug
+发布者: C=US, O=Android, CN=Android Debug
+序列号: 1
+有效期开始日期: Fri Jul 14 23:37:17 CST 2017, 截止日期: Sun Jul 07 23:37:17 CST 2047
+证书指纹:
+	 MD5: C1:33:5E:AE:F7:7E:3A:98:83:09:AC:69:76:4E:78:FD
+	 SHA1: 06:60:64:9A:79:F9:8D:FD:0A:01:34:9D:81:F5:48:6B:BB:99:84:2B
+	 SHA256: 8E:D4:CD:E9:74:45:B9:73:C3:0A:07:B1:27:49:D4:9B:1D:39:A1:6D:75:A7:05:8D:1A:71:5A:41:62:13:2C:A0
+	 签名算法名称: SHA1withRSA
+	 版本: 1
+
+
+
+//-----------------本集机电脑默认签名-----------------
+keytool -list -v -keystore ~/.android/debug.keystore -alias androiddebugkey -storepass android -keypass android
