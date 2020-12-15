@@ -32,12 +32,12 @@
 			android:layout_height="wrap_content"
 			android:layout_marginTop="5.0dp"
 			android:text="设置ip和端口"/>
-			<Button
-		        android:id="@+id/open"
-		        android:layout_width="match_parent"
-		        android:layout_height="wrap_content"
-		        android:layout_marginTop="5.0dp"
-		        android:text="打开"/>
+		<Button
+			android:id="@+id/open"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5.0dp"
+			android:text="打开"/>
 	    <Button
 	        android:id="@+id/close"
 	        android:layout_width="match_parent"
@@ -50,6 +50,14 @@
 	        android:layout_height="wrap_content"
 	        android:layout_marginTop="5.0dp"
 	        android:text="重连"/>
+
+		<Button
+			android:id="@+id/reOpenPage"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="5.0dp"
+			android:text="打开新页面"/>
+
 	    <LinearLayout 
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"

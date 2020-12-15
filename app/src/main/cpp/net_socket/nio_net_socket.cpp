@@ -15,9 +15,6 @@ extern "C" {
     //-----------------------------
     #include "nio_tcp_net_socket_client.h"
     #include "socket_config.h"
-
-    int  server_socket_array[MAX_CLIENT_COUNT];
-    char msg_buf[MAX_MSG_LENGTH];
     //-----------------------------
 
     static const char* kTAG = "net_socket";
@@ -41,17 +38,17 @@ extern "C" {
 
     } JavaSocket;
 
-    int  max_index;
     JavaSocket java_socket[MAX_CLIENT_COUNT];
+    int cur_connect_size;//当前的连接数
+    int cur_max_index;//当前最大的索引数
 
     //前向定义函数
-    JNIEXPORT void JNICALL Java_com_module_net_socket_CSocket_close(JNIEnv *env, jobject thiz);
+    void inner_close(JNIEnv *env, jobject thiz);
 
     JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
         JNIEnv* env;
 
         for (int i = 0 ;i< MAX_CLIENT_COUNT;i++){
-
 
             memset(&java_socket[i], 0, sizeof(java_socket[i]));
 
@@ -62,11 +59,11 @@ extern "C" {
             java_socket[i].j_socket_handler = NULL;
             java_socket[i].j_socket_handler_onSocketConnectResult = NULL;
             java_socket[i].j_socket_handler_onSocketResponse = NULL;
-            java_socket[i].done = 0;
-
+            java_socket[i].done = 1;
             java_socket[i].sfd = -1;
         }
-        max_index = 0;
+        cur_connect_size = 0;
+        cur_max_index = -1;
 
         if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
             return JNI_ERR; // JNI version not supported.
@@ -85,71 +82,49 @@ extern "C" {
         if (res != JNI_OK) {
             res = javaVM->AttachCurrentThread(&env, NULL);
             if (JNI_OK != res) {
-                LOGE(kTAG,"AttachCurrentThread failed, ErrorCode = %d", res);
+                LOGE(kTAG,"on_socket_event AttachCurrentThread failed, ErrorCode = %d", res);
                 return NULL;
             }
         }
-
-        struct timeval beginTime, curTime, usedTime, leftTime;
-        const struct timeval kOneSecond = {
-                (__kernel_time_t)1,
-                (__kernel_suseconds_t) 0
-        };
 
         //1.连接
         int openErrorCode = 0;
         p_java_socket->sfd = nio_tcp_net_socket_open(p_java_socket->c_host,p_java_socket->c_port,&openErrorCode);
         env->CallVoidMethod(p_java_socket->j_socket_handler,p_java_socket->j_socket_handler_onSocketConnectResult,openErrorCode == 0);
-
         LOGE(kTAG,"on_socket_event start FD_SETSIZE %d openErrorCode %d fd %d",FD_SETSIZE,openErrorCode,p_java_socket->sfd);
 
-        pthread_mutex_lock(&p_java_socket->lock);
-        p_java_socket->done = 0;
-        pthread_mutex_unlock(&p_java_socket->lock);
-
-        //2.读写数据
+        //2.读数据
         BYTE read_buf[MAX_MSG_LENGTH];
         while (p_java_socket->sfd != -1){
-            gettimeofday(&beginTime, NULL);
+
             pthread_mutex_lock(&p_java_socket->lock);
             int done = p_java_socket->done;
-            if (p_java_socket->done) {
-                p_java_socket->done = 0;
-            }
             pthread_mutex_unlock(&p_java_socket->lock);
             if (done) {
                 break;
             }
 
-
             socklen_t len = nio_tcp_net_socket_read(p_java_socket->sfd,read_buf);
-            if(len == -1){
+            if(len > 0){
+                jbyteArray newArr = env->NewByteArray(len);
+                env->SetByteArrayRegion(newArr,0, len,(jbyte *)read_buf);
+                env->CallVoidMethod(p_java_socket->j_socket_handler,p_java_socket->j_socket_handler_onSocketResponse,newArr);
+            }else if(len == 0){//若使用了select等系统函数，若远端断开，则select返回1，recv返回0则断开。其他注意事项同法一。
                 p_java_socket->done = 0;
                 break;
+            }else if(len == -1){
+                p_java_socket->done = 0;
+                break;
+            }else if(len == -100){//自定义错误，表示继续
+
             }
-
-            if(len > 0){
-                env->CallVoidMethod(p_java_socket->j_socket_handler,p_java_socket->j_socket_handler_onSocketResponse,NULL);
-            }
-
-
-            gettimeofday(&curTime, NULL);
-            timersub(&curTime, &beginTime, &usedTime);
-            timersub(&kOneSecond, &usedTime, &leftTime);
-            struct timespec sleepTime;
-            sleepTime.tv_sec = 5;
-            sleepTime.tv_nsec = leftTime.tv_usec * 1000;
-
-//            if (sleepTime.tv_sec <= 1) {
-                nanosleep(&sleepTime, NULL);
-//            }
         }
 
-//        Java_com_module_net_socket_CSocket_close(env,p_java_socket->j_socket);
+        //3.断开网络
+        inner_close(env,p_java_socket->j_socket);
 
         javaVM->DetachCurrentThread();
         LOGE(kTAG,"on_socket_event end DetachCurrentThread");
-
         return param;
     }
 
@@ -157,8 +132,8 @@ extern "C" {
     Java_com_module_net_socket_CSocket_open(JNIEnv *env, jobject thiz, jstring host, jint port,
                                             jobject handler) {
 
-        LOGE(kTAG,"open start");
-        if(max_index >= MAX_CLIENT_COUNT){
+        LOGE(kTAG,"open start cur_connect_size %d cur_max_index %d",cur_connect_size,cur_max_index);
+        if(cur_connect_size >= MAX_CLIENT_COUNT){
             LOGE(kTAG,"open failed , max connects is %d ",MAX_CLIENT_COUNT);
             return;
         }
@@ -166,7 +141,7 @@ extern "C" {
         for (int i = 0 ;i< MAX_CLIENT_COUNT;i++) {
             jboolean isSame = env->IsSameObject(java_socket[i].j_socket,thiz);
             if(isSame == JNI_TRUE){
-                LOGE(kTAG,"open issame with index %d",i);
+                LOGE(kTAG,"open isSame with index %d",i);
                 return;
             }
         }
@@ -177,8 +152,17 @@ extern "C" {
         pthread_attr_init(&threadAttr_);
         pthread_attr_setdetachstate(&threadAttr_, PTHREAD_CREATE_DETACHED);
 
+        //找到下一个可用的
+        cur_max_index ++;
+        for(int i = 0;i<MAX_CLIENT_COUNT;i++){
+            int nextIndex = (cur_max_index + i) % MAX_CLIENT_COUNT;
+            if(java_socket[nextIndex].done){
+                cur_max_index = nextIndex;
+                break;
+            }
+        }
 
-        JavaSocket * p_java_socket = &java_socket[max_index];
+        JavaSocket * p_java_socket = &java_socket[cur_max_index];
         
         pthread_mutex_init(&(p_java_socket->lock), NULL);
 
@@ -186,6 +170,7 @@ extern "C" {
         p_java_socket->c_host = jstring_to_cchar(env,host);
         p_java_socket->c_port = port;
         p_java_socket->j_socket_handler = env->NewGlobalRef(handler);
+        p_java_socket->done = 0;
 
         jclass  cls_j_socket_handler = env->GetObjectClass(handler);
         p_java_socket->j_socket_handler_onSocketConnectResult = env->GetMethodID(cls_j_socket_handler,"onSocketConnectResult", "(Z)V");
@@ -195,19 +180,18 @@ extern "C" {
         pthread_create( &threadInfo_, &threadAttr_, on_socket_event, p_java_socket);
         pthread_attr_destroy(&threadAttr_);
 
-        max_index++;
+        cur_connect_size++;
 
-        LOGE(kTAG,"open end .socket size %d ",max_index);
+        LOGE(kTAG, "open end cur_connect_size %d cur_max_index %d",cur_connect_size, cur_max_index);
     }
 
     JNIEXPORT void JNICALL
     Java_com_module_net_socket_CSocket_reconnect(JNIEnv *env, jobject thiz) {
-        // TODO: implement reconnect()
+
     }
 
     JNIEXPORT void JNICALL
     Java_com_module_net_socket_CSocket_write(JNIEnv *env, jobject thiz, jbyteArray bytes) {
-        // TODO: implement write()
 
         int index = -1;
         for (int i = 0 ;i< MAX_CLIENT_COUNT;i++) {
@@ -219,19 +203,17 @@ extern "C" {
                 break;
             }
         }
-        if(index>=0 ) {
 
+        if(index>=0 ) {
             jsize length = env->GetArrayLength(bytes);
             jbyte *pjbyte = env->GetByteArrayElements(bytes,NULL);
             nio_tcp_net_socket_send(java_socket[index].sfd,(BYTE *)pjbyte,length);
             env->ReleaseByteArrayElements(bytes,pjbyte,0);
         }
-
     }
 
     JNIEXPORT jbyteArray JNICALL
     Java_com_module_net_socket_CSocket_read(JNIEnv *env, jobject thiz) {
-        // TODO: implement read()
         return NULL;
     }
 
@@ -252,22 +234,48 @@ extern "C" {
         }
 
         if( index >= 0 ){
-            JavaSocket * p_java_socket = &java_socket[index];
-
             LOGE(kTAG,"close AAA");
-//            pthread_mutex_lock(&p_java_socket->lock);
+
+            JavaSocket * p_java_socket = &java_socket[index];
+            pthread_mutex_lock(&p_java_socket->lock);
+            int done = p_java_socket->done;
+            if (p_java_socket->done == 0) {
+                p_java_socket->done = 1;
+            }
+            pthread_mutex_unlock(&p_java_socket->lock);
+
+            LOGE(kTAG,"close BBB done = %d",done);
+        }else{
+            LOGE(kTAG,"close index not found");
+        }
+
+        LOGE(kTAG,"close end");
+    }
+
+    void inner_close(JNIEnv *env, jobject thiz) {
+
+        LOGE(kTAG,"inner_close start");
+
+        int index = -1;
+        for (int i = 0 ;i< MAX_CLIENT_COUNT;i++) {
+            jboolean isSame = env->IsSameObject(java_socket[i].j_socket,thiz);
+            if(java_socket[i].j_socket && isSame == JNI_TRUE){
+                index = i;
+
+                LOGE(kTAG,"inner_close index %d",i);
+                break;
+            }
+        }
+
+        if( index >= 0 ){
+            LOGE(kTAG,"inner_close AAA");
+
+            JavaSocket * p_java_socket = &java_socket[index];
+            pthread_mutex_lock(&p_java_socket->lock);
             p_java_socket->done = 1;
-//            pthread_mutex_unlock(&p_java_socket->lock);
+            pthread_mutex_unlock(&p_java_socket->lock);
 
-            LOGE(kTAG,"close BBB");
-
-//         waiting for the network thread to flip the done flag
-//            struct timespec sleepTime;
-//            memset(&sleepTime, 0, sizeof(sleepTime));
-//            sleepTime.tv_nsec = 100000000;
-//            while (p_java_socket->done) {
-//                nanosleep(&sleepTime, NULL);
-//            }
+            LOGE(kTAG,"inner_close BBB");
 
             env->DeleteGlobalRef(p_java_socket->j_socket);
             p_java_socket->j_socket = NULL;
@@ -291,20 +299,20 @@ extern "C" {
 
             pthread_mutex_destroy(&p_java_socket->lock);
 
+            //移动位置是好的想法，但是如果如果有多个连接，前面的连接关闭后，导致后面的连接前移，而原先指针指向后面的对象，现在指向为空的对象，导致逻辑不对
+//            JavaSocket t = java_socket[index];
+//            for (int i = index ;i< MAX_CLIENT_COUNT-1;i++) {
+//                java_socket[i] = java_socket[i+1];
+//            }
+//            java_socket[MAX_CLIENT_COUNT-1] = t;
 
-            JavaSocket t = java_socket[index];
-            for (int i = index ;i< MAX_CLIENT_COUNT-1;i++) {
-                java_socket[i] = java_socket[i+1];
-            }
-            java_socket[MAX_CLIENT_COUNT-1] = t;
-
-            -- max_index;
+            -- cur_connect_size;
         }else{
-            LOGE(kTAG,"close index not found");
+            LOGE(kTAG,"inner_close index not found");
         }
 
-        LOGE(kTAG,"close end");
-    }
+        LOGE(kTAG,"inner_close end");
+     }
 
     /**
 

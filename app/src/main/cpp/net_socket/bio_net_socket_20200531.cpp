@@ -41,7 +41,7 @@ extern "C" {
 
     } JavaSocket;
 
-    int  max_index;
+    int  cur_max_index;
     JavaSocket java_socket[MAX_CLIENT_COUNT];
 
 
@@ -64,7 +64,7 @@ extern "C" {
 
             java_socket[i].sfd = -1;
         }
-        max_index = 0;
+    cur_max_index = 0;
 
         if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
             return JNI_ERR; // JNI version not supported.
@@ -141,7 +141,7 @@ extern "C" {
                                             jobject handler) {
 
         LOGE(kTAG,"open start");
-        if(max_index >= MAX_CLIENT_COUNT){
+        if(cur_max_index >= MAX_CLIENT_COUNT){
             LOGE(kTAG,"open failed , max connects is %d ",MAX_CLIENT_COUNT);
             return;
         }
@@ -161,7 +161,7 @@ extern "C" {
         pthread_attr_setdetachstate(&threadAttr_, PTHREAD_CREATE_DETACHED);
 
 
-        JavaSocket * p_java_socket = &java_socket[max_index];
+        JavaSocket * p_java_socket = &java_socket[cur_max_index];
         
         pthread_mutex_init(&(p_java_socket->lock), NULL);
 
@@ -178,9 +178,9 @@ extern "C" {
         pthread_create( &threadInfo_, &threadAttr_, on_socket_event, p_java_socket);
         pthread_attr_destroy(&threadAttr_);
 
-        max_index++;
+        cur_max_index++;
 
-        LOGE(kTAG,"open end .socket size %d ",max_index);
+        LOGE(kTAG, "open end .socket size %d ", cur_max_index);
     }
 
     JNIEXPORT void JNICALL
@@ -274,7 +274,7 @@ extern "C" {
                 java_socket[i] = java_socket[i];
             }
             java_socket[MAX_CLIENT_COUNT-1] = java_socket[index];
-            -- max_index;
+            -- cur_max_index;
         }
 
 

@@ -41,7 +41,7 @@ extern "C" {
 
     } JavaSocket;
 
-    int  max_index;
+    int  cur_max_index;
     JavaSocket java_socket[MAX_CLIENT_COUNT];
 
 
@@ -64,7 +64,7 @@ extern "C" {
 
             java_socket[i].sfd = -1;
         }
-        max_index = 0;
+    cur_max_index = 0;
 
         if (vm->GetEnv((void**)&env, JNI_VERSION_1_6) != JNI_OK) {
             return JNI_ERR; // JNI version not supported.
@@ -140,7 +140,7 @@ extern "C" {
                                             jobject handler) {
 
         LOGE(kTAG,"open start");
-        if(max_index >= MAX_CLIENT_COUNT){
+        if(cur_max_index >= MAX_CLIENT_COUNT){
             LOGE(kTAG,"open failed , max connects is %d ",MAX_CLIENT_COUNT);
             return;
         }
@@ -159,24 +159,24 @@ extern "C" {
         pthread_attr_init(&threadAttr_);
         pthread_attr_setdetachstate(&threadAttr_, PTHREAD_CREATE_DETACHED);
 
-        pthread_mutex_init(&java_socket[max_index].lock, NULL);
+        pthread_mutex_init(&java_socket[cur_max_index].lock, NULL);
 
-        java_socket[max_index].j_socket = env->NewGlobalRef(thiz);
-        java_socket[max_index].c_host = jstring_to_cchar(env,host);
-        java_socket[max_index].c_port = port;
-        java_socket[max_index].j_socket_handler = env->NewGlobalRef(handler);
+        java_socket[cur_max_index].j_socket = env->NewGlobalRef(thiz);
+        java_socket[cur_max_index].c_host = jstring_to_cchar(env, host);
+        java_socket[cur_max_index].c_port = port;
+        java_socket[cur_max_index].j_socket_handler = env->NewGlobalRef(handler);
 
         jclass  cls_j_socket_handler = env->GetObjectClass(handler);
-        java_socket[max_index].j_socket_handler_onSocketConnectResult = env->GetMethodID(cls_j_socket_handler,"onSocketConnectResult", "(Z)V");
-        java_socket[max_index].j_socket_handler_onSocketResponse = env->GetMethodID(cls_j_socket_handler,"onSocketResponse", "([B)V");
+        java_socket[cur_max_index].j_socket_handler_onSocketConnectResult = env->GetMethodID(cls_j_socket_handler, "onSocketConnectResult", "(Z)V");
+        java_socket[cur_max_index].j_socket_handler_onSocketResponse = env->GetMethodID(cls_j_socket_handler, "onSocketResponse", "([B)V");
         env->DeleteLocalRef(cls_j_socket_handler);
 
-        pthread_create( &threadInfo_, &threadAttr_, on_socket_event, &java_socket[max_index]);
+        pthread_create( &threadInfo_, &threadAttr_, on_socket_event, &java_socket[cur_max_index]);
         pthread_attr_destroy(&threadAttr_);
 
-        max_index++;
+        cur_max_index++;
 
-        LOGE(kTAG,"open end .socket size %d ",max_index);
+        LOGE(kTAG, "open end .socket size %d ", cur_max_index);
     }
 
     JNIEXPORT void JNICALL
@@ -268,7 +268,7 @@ extern "C" {
                 java_socket[i] = java_socket[i];
             }
             java_socket[MAX_CLIENT_COUNT-1] = java_socket[index];
-            -- max_index;
+            -- cur_max_index;
         }
 
 

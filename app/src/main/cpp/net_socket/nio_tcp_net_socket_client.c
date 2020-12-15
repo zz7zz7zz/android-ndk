@@ -31,13 +31,13 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
 
     //https://www.cnblogs.com/GameDeveloper/p/3406565.html
     int flags = fcntl(iret_socket_fd,F_GETFL,0);//获取建立的sockfd的当前状态（非阻塞）
+    LOGV(kTAG,"socket iret_socket_fd %d flags %d",iret_socket_fd,flags);
     if(flags < 0){
         close(iret_socket_fd);
         *openErrorCode = -2;
         return -1;
     }
 
-    LOGV(kTAG,"socket flags %d",flags);
     int newFlags = fcntl(iret_socket_fd,F_SETFL,flags|O_NONBLOCK);//将当前sockfd设置为非阻塞
     if(newFlags < 0){
         close(iret_socket_fd);
@@ -55,7 +55,7 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
             *openErrorCode = -4;
             return -1;
         }
-    } else if(connectRet == 0){//连接成功
+    } else if(connectRet == 0){//连接成功；当客户端和服务器端在同一台主机上的时候，connect回马上结束，并返回0
         return iret_socket_fd;
     }
 
@@ -63,7 +63,7 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
     fd_set fd_wrs;
     fd_set fd_exs;
     struct timeval timeout;
-    timeout.tv_sec = 10;
+    timeout.tv_sec = CONNECT_TIME_OUT;
     timeout.tv_usec= 0;
 
     FD_ZERO(&fd_rds);
@@ -75,7 +75,7 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
     FD_ZERO(&fd_exs);
     FD_SET(iret_socket_fd,&fd_exs);
 
-    int ret = select(iret_socket_fd + 1,&fd_rds,&fd_wrs,&fd_exs,&timeout);
+    int ret = select(iret_socket_fd + 1,NULL,&fd_wrs,&fd_exs,&timeout);
     if(ret < 0){
         //an error occurred.
         LOGV(kTAG,"select an error occurred errno = %d " ,errno);
@@ -98,7 +98,8 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
 
         LOGV(kTAG,"select FD_ISSET fd_rds = %d ; FD_ISSET fd_wrs %d ; FD_ISSET fd_exs %d " ,vr ,vw ,ve);
 
-        if(vr || vw){
+        //只判断可写即可
+        if(vw){
             int error = 0;
             socklen_t socklen = sizeof(error);
            int ret_getsocketopt = getsockopt(iret_socket_fd,SOL_SOCKET,SO_ERROR,&error,&socklen);
@@ -117,6 +118,10 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
                 *openErrorCode = -8;
                 return -1;
             }
+        }else{
+            close(iret_socket_fd);
+            *openErrorCode = -9;
+            return -1;
         }
     }
 
@@ -150,7 +155,7 @@ int nio_tcp_net_socket_send(int sfd,BYTE * msg,int length)
     send_buf[length] = '\0';
 
     ssize_t susLen= write(sfd,send_buf, length);
-
+//    ssize_t susLen = send(sfd,send_buf,length,0);
     LOGV(kTAG,"nio_tcp_net_socket_send A (error = %d errorstr = %s) susLen %d length %d message %s ",errno ,strerror(errno) ,susLen,length ,send_buf);
 
     if( susLen == -1){
@@ -175,21 +180,21 @@ int nio_tcp_net_socket_read(int iret_socket_fd,BYTE read_buf[])
     fd_set fd_wrs;
     fd_set fd_exs;
     struct timeval timeout;
-    timeout.tv_sec = 10;
+    timeout.tv_sec = READ_TIME_OUT;
     timeout.tv_usec= 0;
 
 //    while(1){
         FD_ZERO(&fd_rds);
         FD_SET(iret_socket_fd,&fd_rds);
 
-        FD_ZERO(&fd_wrs);
-        FD_SET(iret_socket_fd,&fd_wrs);
+//        FD_ZERO(&fd_wrs);
+//        FD_SET(iret_socket_fd,&fd_wrs);
 
         FD_ZERO(&fd_exs);
         FD_SET(iret_socket_fd,&fd_exs);
 
-        int ret = select(iret_socket_fd + 1,&fd_rds,&fd_wrs,&fd_exs,&timeout);
-        LOGV(kTAG,"nio_tcp_net_socket_read select errno = %d selectCode = %d ",errno ,ret);
+        int ret = select(iret_socket_fd + 1,&fd_rds,NULL,&fd_exs,&timeout);
+        LOGV(kTAG,"nio_tcp_net_socket_read select errno = %d selectRet = %d ",errno ,ret);
         if(ret >0){
 
             int vr =    FD_ISSET(iret_socket_fd,&fd_rds);
@@ -197,33 +202,35 @@ int nio_tcp_net_socket_read(int iret_socket_fd,BYTE read_buf[])
             int ve =    FD_ISSET(iret_socket_fd,&fd_exs);
 
             LOGV(kTAG,"nio_tcp_net_socket_read select FD_ISSET fd_rds = %d ; FD_ISSET fd_wrs %d ; FD_ISSET fd_exs %d " ,vr ,vw ,ve);
-
+            /*第一种情况是socket连接出现错误（不要问为什么，这是系统规定的，可读可写时候有可能是connect连接成功后远程主机断开了连接close(socket)），
+              第二种情况是connect连接成功，socket读缓冲区得到了远程主机发送的数据。
+              针对第一钟情况，我们可以通过客户端与服务器端定义的心跳来控制
+              */
             int error = 0;
             socklen_t socklen = sizeof(error);
             int ret_getsocketopt = getsockopt(iret_socket_fd,SOL_SOCKET,SO_ERROR,&error,&socklen);
-            LOGV(kTAG,"select (getsocketopt = %d), (errno = %d errnostr = %s),(error = %d errorstr = %s) " ,ret_getsocketopt ,errno ,strerror(errno) ,error,strerror(error));
+            LOGV(kTAG,"nio_tcp_net_socket_read (getsocketopt = %d), (errno = %d errnostr = %s),(error = %d errorstr = %s) " ,ret_getsocketopt ,errno ,strerror(errno) ,error,strerror(error));
 
             if(ret_getsocketopt < 0){
 
             }
-            if(vr && vw){
+//            if(vr && vw){
 //                close(iret_socket_fd);
 //                return -1;
-            }
+//            }
 
             if(vr){
                     memset(read_buf,0, MAX_MSG_LENGTH);
-                    socklen_t  socklen1 = read(iret_socket_fd,read_buf, MAX_MSG_LENGTH);
-                    LOGV(kTAG,"nio_tcp_net_socket_read (errno = %d errnostr = %s),(len = %d value = %s )",errno ,strerror(errno),socklen1,read_buf);
-                    return socklen1;
+                    socklen_t  ret_socklen = recv(iret_socket_fd,read_buf,MAX_MSG_LENGTH,0);
+//                    socklen_t  ret_socklen = read(iret_socket_fd, read_buf, MAX_MSG_LENGTH);
+                //若使用了select等系统函数，若远端断开，则select返回1，recv返回0则断开。其他注意事项同法一。
+                    LOGV(kTAG, "nio_tcp_net_socket_read (errno = %d errnostr = %s),(len = %d value = %s ) ret_socklen = %d", errno , strerror(errno), ret_socklen, read_buf,ret_socklen);
+                    return ret_socklen;
             }
 
-            if(vw){
-
-            }
         }
 //    }
-    return 0;
+    return -100;
 }
 
 int nio_tcp_net_socket_close(int sfd)
