@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 
 #include "../base/util_log.h"
 #include "socket_config.h"
