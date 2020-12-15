@@ -5,7 +5,7 @@
 #include "../base/util_log.h"
 #include "../base/util_type.h"
 #include "../base/app_build_config.h"
-
+#include "../base/util_endian.h"
 
 
 extern "C" {
@@ -69,7 +69,7 @@ extern "C" {
             return JNI_ERR; // JNI version not supported.
         }
 
-        LOGE(kTAG,"JNI_OnLoad");
+        LOGE(kTAG,"JNI_OnLoad %s %s" , (getEndianType() == 1 ? "大端模式":"小端模式") ,(getEndianType2() == 1 ? "大端模式":"小端模式") );
         return  JNI_VERSION_1_6;
     }
 
