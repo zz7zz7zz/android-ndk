@@ -149,6 +149,27 @@ int nio_tcp_net_socket_open(const char * ip, int port, int * openErrorCode)
 
 int nio_tcp_net_socket_send(int sfd,BYTE * msg,int length)
 {
+
+    //--------------------------------
+    int snd_size = 0;   /* 发送缓冲区大小 */
+    int rcv_size = 0;    /* 接收缓冲区大小 */
+    socklen_t optlen;    /* 选项值长度 */
+    optlen = sizeof(snd_size);
+    int err = getsockopt(sfd, SOL_SOCKET, SO_SNDBUF,&snd_size, &optlen);
+    if(err<0){
+        LOGV(kTAG,"获取发送缓冲区大小错误\n");
+    }
+    optlen = sizeof(rcv_size);
+    err = getsockopt(sfd, SOL_SOCKET, SO_RCVBUF, &rcv_size, &optlen);
+    if(err<0){
+        LOGV(kTAG,"获取接收缓冲区大小错误\n");
+    }
+
+    LOGV(kTAG," 发送缓冲区原始大小为: %d 字节\n",snd_size);
+    LOGV(kTAG," 接收缓冲区原始大小为: %d 字节\n",rcv_size);
+    //--------------------------------
+
+
     char send_buf[MAX_MSG_LENGTH];
     memset(send_buf,0, sizeof(send_buf));
 

@@ -59,7 +59,15 @@
             android:layout_height="wrap_content"
             android:gravity="left|center_vertical"
             android:textAllCaps="false"
-            android:text="ffmpeg_thumbnail!"/>
+            android:text="ffmpeg_thumbnail"/>
+
+        <Button
+            android:id="@+id/ffmpeg_set_watermask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left|center_vertical"
+            android:textAllCaps="false"
+            android:text="ffmpeg_set_watermask"/>
 
         <Button
             android:id="@+id/ffmpeg_preview"

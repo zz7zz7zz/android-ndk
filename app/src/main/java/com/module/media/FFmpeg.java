@@ -20,8 +20,8 @@ public class FFmpeg {
         System.loadLibrary("avfilter");
 //        System.loadLibrary("avdevice");
 
-//        System.loadLibrary("ffmpeg");
-        System.loadLibrary("ffmpegCmd");
+        System.loadLibrary("ffmpeg");
+//        System.loadLibrary("ffmpegCmd");
     }
 
     public static native int execute(String []argv);
@@ -31,5 +31,7 @@ public class FFmpeg {
     public static native String getAvCodec();
     public static native String getAvFilter();
     public static native String getConfiguration();
+
+    public static native boolean setWaterMaskToVideo(String inputVideoPath,String intWaterMaskPicturePath,int x,int y,String outputVideoPath);
 
 }

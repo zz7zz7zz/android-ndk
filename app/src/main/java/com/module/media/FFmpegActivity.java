@@ -32,6 +32,7 @@ public class FFmpegActivity extends AppCompatActivity implements View.OnClickLis
         findViewById(R.id.ffmpeg_configuration).setOnClickListener(this);
 
         findViewById(R.id.ffmpeg_thumbnail).setOnClickListener(this);
+        findViewById(R.id.ffmpeg_set_watermask).setOnClickListener(this);
         findViewById(R.id.ffmpeg_preview).setOnClickListener(this);
         findViewById(R.id.ffmpeg_cut).setOnClickListener(this);
 
@@ -75,6 +76,15 @@ public class FFmpegActivity extends AppCompatActivity implements View.OnClickLis
 //                int iRet = FFmpeg.execute(new String[]{"ffmpeg"});
                 appendLog(v,iRet);
                 break;
+
+            case R.id.ffmpeg_set_watermask:
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        FFmpeg.setWaterMaskToVideo("/sdcard/input.mp4","/sdcard/watermask.jpg",20,20,"/sdcard/output.watermask.mp4");
+                    }
+                }).start();
+                  break;
 
             case R.id.ffmpeg_preview:
                 break;

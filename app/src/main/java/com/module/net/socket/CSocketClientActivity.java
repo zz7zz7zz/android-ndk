@@ -158,7 +158,9 @@ public class CSocketClientActivity extends Activity implements CSocketHandler{
 					break;
 					
 				case R.id.send:
-					mClient.write(sendContent.getText().toString().getBytes());
+
+					byte[] sendBuf = sendContent.getText().toString().getBytes();
+					mClient.write(sendBuf);
 					sendContent.setText("");
 					break;
 					

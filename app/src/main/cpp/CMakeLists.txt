@@ -27,6 +27,6 @@ set(lib_src_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 add_subdirectory(${lib_src_DIR}/study)
 add_subdirectory(${lib_src_DIR}/signature)
-# add_subdirectory(${lib_src_DIR}/ffmpeg)
-add_subdirectory(${lib_src_DIR}/ffmpeg_cmd)
+ add_subdirectory(${lib_src_DIR}/ffmpeg)
+#add_subdirectory(${lib_src_DIR}/ffmpeg_cmd)
 add_subdirectory(${lib_src_DIR}/net_socket)

@@ -17,68 +17,41 @@ extern "C"{
 #include "libavutil/time.h"
 #include "libavutil/fifo.h"
 #include "libavcodec/avcodec.h"
+//#include "libavcodec/qsv.h"
 #include "libavformat/avformat.h"
+//	#include "libavformat/url.h"
 #include "libavformat/avio.h"
+//	#include "libavfilter/avcodec.h"
+//#include "libavfilter/avfiltergraph.h"
 #include "libavfilter/avfilter.h"
 #include "libavfilter/buffersink.h"
 #include "libavfilter/buffersrc.h"
 #include "libswscale/swscale.h"
 #include "libswresample/swresample.h"
+//#include "libavdevice/avdevice.h"
 
     static const char* kTAG = "ffmpeg";
 
-    const char *filter_descr = "overlay=100:100";
-//    const char *filter_descr = "movie=/sdcard/watermask.jpg[watermark];[in][watermark] overlay=main_w-overlay_w-10:main_h-overlay_h-10[out]";
-
-    //输入视频
+    //-------------水印变量 start---------------
     AVFormatContext *input_video_av_fmt_cxt;
-    AVCodecContext *input_video_av_codec_cxt;
-    int input_video_stream_idx;
-
-    //输入图片
     AVFormatContext *input_image_av_fmt_cxt;
+    AVFormatContext *output_video_av_fmt_cxt;
+
+    AVCodecContext *input_video_av_codec_cxt;
     AVCodecContext *input_image_av_codec_cxt;
+    AVCodecContext *out_video_av_codec_cxt;
+    int input_video_stream_idx;
     int input_image_stream_idx;
 
-    //输出视频
-    AVFormatContext * output_video_av_fmt_cxt;
-    AVCodecContext * out_video_av_codec_cxt;
-
-
+    AVFilterInOut *inputs;
+    AVFilterInOut *outputs;
     AVFilterGraph * av_filter_graph;
 
-    AVFilterInOut * inputs;
-    AVFilterInOut * outputs;
+    AVFilterContext *inputFilterContext[2];
+    AVFilterContext *outputFilterContext = nullptr;
 
-    AVFilterContext * buffersrc_ctx;
-    AVFilterContext * buffer_overlay_ctx;
-    AVFilterContext * buffersink_ctx;
-
-    void ffmpegInit();
-
-    int openInputFileVideo(const char *input_file_name);
-    int openInputFileImage(const char *input_file_name);
-
-    int initInputVideoDecodeCodec();
-    int initInputImageDecodeCodec();
-
-    int initOutPutVideoDecodeCodec(int w, int h);
-    int openOutPutFileVideo(const char *input_file_name);
-
-    int initInputVideoFilter2(AVFilterInOut * inputs,AVFilterContext ** input_filter_ctx);
-    int initInputImageFilter2(AVFilterInOut * inputs,AVFilterContext ** overlay_filter_ctx);
-    int initOutputVideoFilter2(AVFilterInOut * inputs,AVFilterContext ** overlay_filter_ctx);
-
-    int initInputVideoFilter(AVFilterInOut *input,const char *filterName,  int inputIndex);
-    int InitOutputFilter(AVFilterInOut *output,const char *filterName);
-
-    void FreeInout();
-    std::shared_ptr<AVPacket> ReadPacketFromSource(int inputIndex);
-    bool DecodeVideo(AVPacket* packet, AVFrame* frame,int inputIndex);
-    void closeInputVideo();
-    void closeInputImage();
-    void CloseOutput();
-
+    const char *filter_descr = "overlay=100:100";
+    //-------------水印变量 end---------------
 
     JNIEXPORT jstring JNICALL
     Java_com_module_media_FFmpeg_getUrlProtocol(JNIEnv *env, jclass clazz) {
@@ -173,6 +146,25 @@ extern "C"{
         return env->NewStringUTF(info);
     }
 
+    void ffmpegInit();
+
+    int  openInputFileVideo(const char * input_file_name);
+    int  openInputFileImage(const char * input_file_name);
+
+    int  initInputVideoDecodeCodec();
+    int  initInputImageDecodeCodec();
+
+    int  initOutPutVideoDecodeCodec(int w, int h);
+    int  openOutPutFileVideo(const char * input_file_name);
+
+    int initInputVideoFilter(AVFilterInOut *input,const char *filterName,  int inputIndex);
+    int InitOutputFilter(AVFilterInOut *output,const char *filterName);
+    void FreeInout();
+    std::shared_ptr<AVPacket> ReadPacketFromSource(int inputIndex);
+bool DecodeVideo(AVPacket* packet, AVFrame* frame,int inputIndex);
+    void closeInputVideo();
+    void closeInputImage();
+    void CloseOutput();
 
     JNIEXPORT jboolean JNICALL
     Java_com_module_media_FFmpeg_setWaterMaskToVideo(JNIEnv *env, jclass clazz,
@@ -185,18 +177,18 @@ extern "C"{
         ffmpegInit();
         LOGE(kTAG,"1.ffmpegInit");
 
-        const char *c_input_video_path = env->GetStringUTFChars(input_video_path,NULL);
-        const char *c_water_mask_picture_Path = env->GetStringUTFChars(int_water_mask_picture_path,NULL);
-        const char *c_output_video_path = env->GetStringUTFChars(output_video_path,NULL);
+        const char * c_input_video_path = env->GetStringUTFChars(input_video_path,NULL);
+        const char * c_water_mask_picture_Path = env->GetStringUTFChars(int_water_mask_picture_path,NULL);
+        const char * c_output_video_path = env->GetStringUTFChars(output_video_path,NULL);
 
         LOGE(kTAG,"param is %s %s %d %d %d ",c_input_video_path,c_water_mask_picture_Path,x,y,c_output_video_path);
         //2.打开文件
-        openInputFileVideo(c_input_video_path);
-        openInputFileImage(c_water_mask_picture_Path);
+    openInputFileVideo(c_input_video_path);
+    openInputFileImage(c_water_mask_picture_Path);
 
         //3.初始化解码器
-        initInputVideoDecodeCodec();
-        initInputImageDecodeCodec();
+    initInputVideoDecodeCodec();
+    initInputImageDecodeCodec();
 
         //4.编码器
         int ret = initOutPutVideoDecodeCodec(input_video_av_codec_cxt->width,
@@ -210,38 +202,6 @@ extern "C"{
         ret = openOutPutFileVideo(c_output_video_path);
         if(ret < 0){
             LOGE(kTAG," openOutPutVideo failed ");
-            return JNI_FALSE;
-        }
-
-
-
-        av_filter_graph = avfilter_graph_alloc();
-        if(!av_filter_graph){
-            LOGE(kTAG," avfilter_graph_alloc failed ");
-            return JNI_FALSE;
-        }
-
-        ret = avfilter_graph_parse2(av_filter_graph, filter_descr, &inputs, &outputs);
-        if(ret<0){
-            LOGE(kTAG,"avfilter_graph_parse2  failed ");
-            return JNI_FALSE;
-        }
-//        assert(inputs && inputs->next && !inputs->next->next);
-
-        //6.打开输入filter
-//        initInputVideoFilter(inputs,"MainFrame",0);
-//        initInputVideoFilter(inputs->next,"OverlayFrame",1);
-//        InitOutputFilter(outputs,"output");
-
-        initInputVideoFilter2(inputs,&buffersrc_ctx);
-        initInputImageFilter2(inputs->next,&buffer_overlay_ctx);
-        initOutputVideoFilter2(outputs,&buffersink_ctx);
-
-//        FreeInout()
-
-        ret = avfilter_graph_config(av_filter_graph,NULL);
-        if(ret<0){
-            LOGE(kTAG,"avfilter_graph_config  failed ");
             return JNI_FALSE;
         }
 
@@ -259,6 +219,27 @@ extern "C"{
         int64_t outLastTime = av_gettime();
         int64_t inLastTime = av_gettime();
         int64_t videoCount = 0;
+
+        av_filter_graph = avfilter_graph_alloc();
+        if(!av_filter_graph)
+        {
+            LOGE(kTAG," avfilter_graph_alloc failed ");
+            return JNI_FALSE;
+        }
+
+        avfilter_graph_parse2(av_filter_graph, filter_descr, &inputs, &outputs);
+
+        //6.打开输入filter
+        initInputVideoFilter(inputs,"MainFrame",0);
+        initInputVideoFilter(inputs->next,"OverlayFrame",1);
+        InitOutputFilter(outputs,"output");
+
+        ret = avfilter_graph_config(av_filter_graph,NULL);
+        if(ret<0){
+            LOGE(kTAG,"avfilter_graph_config  failed ");
+            return JNI_FALSE;
+        }
+
         bool ret1 = true;
         while(ret1)
         {
@@ -276,13 +257,13 @@ extern "C"{
                 if(DecodeVideo(packet.get(),pSrcFrame[0],0))
                 {
                     av_frame_ref( inputFrame[0],pSrcFrame[0]);
-                    if (av_buffersrc_add_frame_flags(buffersrc_ctx, inputFrame[0], AV_BUFFERSRC_FLAG_PUSH) >= 0)
+                    if (av_buffersrc_add_frame_flags(inputFilterContext[0], inputFrame[0], AV_BUFFERSRC_FLAG_PUSH) >= 0)
                     {
                         pSrcFrame[1]->pts = pSrcFrame[0]->pts;
                         //av_frame_ref( inputFrame[1],pSrcFrame[1]);
-                        if(av_buffersrc_add_frame_flags(buffer_overlay_ctx,pSrcFrame[1], AV_BUFFERSRC_FLAG_PUSH) >= 0)
+                        if(av_buffersrc_add_frame_flags(inputFilterContext[1],pSrcFrame[1], AV_BUFFERSRC_FLAG_PUSH) >= 0)
                         {
-                            ret = av_buffersink_get_frame_flags(buffersink_ctx, filterFrame,AV_BUFFERSINK_FLAG_NO_REQUEST);
+                            ret = av_buffersink_get_frame_flags(outputFilterContext, filterFrame,AV_BUFFERSINK_FLAG_NO_REQUEST);
 
 //                            this_thread::sleep_for(chrono::milliseconds(10));
                             if ( ret >= 0)
@@ -327,24 +308,24 @@ extern "C"{
     }
 
     //包含打开文件和初始化解码器
-    int openInputFileVideo(const char *input_file_name){
+    int openInputFileVideo(const char * input_file_name){
         input_video_av_fmt_cxt = avformat_alloc_context();
         int ret = avformat_open_input(&input_video_av_fmt_cxt, input_file_name, NULL, NULL);
         if(ret < 0){
-            LOGE(kTAG,"openInputVideo can not open file");
+            LOGE(kTAG,"can not open file");
             return ret;
         }
 
         ret = avformat_find_stream_info(input_video_av_fmt_cxt, NULL);
         if(ret<0){
-            LOGE(kTAG,"openInputVideo avformat_find_stream_info");
+            LOGE(kTAG,"can not find stream info");
             return ret;
         }
 
         AVCodec *avCodec;
         ret = av_find_best_stream(input_video_av_fmt_cxt,AVMEDIA_TYPE_VIDEO,-1,-1,&avCodec,0);
         if(ret < 0){
-            LOGE(kTAG,"openInputVideo av_find_best_stream");
+            LOGE(kTAG,"can not find video steam");
             return ret;
         }
         input_video_stream_idx = ret;
@@ -352,15 +333,13 @@ extern "C"{
 
         ret = avcodec_open2(input_video_av_codec_cxt,avCodec,NULL);
         if(ret < 0){
-            LOGE(kTAG,"openInputVideo avcodec_open2");
+            LOGE(kTAG,"can not open video decoder");
             return ret;
         }
-
-        LOGE(kTAG,"openVideo ->iformat->name %s",input_video_av_fmt_cxt->iformat->name);
         return ret;
     }
 
-    int openInputFileImage(const char *input_file_name){
+    int openInputFileImage(const char * input_file_name){
         input_image_av_fmt_cxt = avformat_alloc_context();
         int ret = avformat_open_input(&input_image_av_fmt_cxt, input_file_name, NULL, NULL);
         if(ret < 0){
@@ -370,14 +349,14 @@ extern "C"{
 
         ret = avformat_find_stream_info(input_image_av_fmt_cxt, NULL);
         if(ret<0){
-            LOGE(kTAG,"openInputImage avformat_find_stream_info");
+            LOGE(kTAG,"openInputImage can not find stream info");
             return ret;
         }
 
         AVCodec *avCodec;
         ret = av_find_best_stream(input_image_av_fmt_cxt, AVMEDIA_TYPE_VIDEO, -1, -1, &avCodec, 0);
         if(ret < 0){
-            LOGE(kTAG,"openInputImage av_find_best_stream");
+            LOGE(kTAG,"can not find image steam");
             return ret;
         }
         input_image_stream_idx = ret;
@@ -385,11 +364,9 @@ extern "C"{
 
         ret = avcodec_open2(input_image_av_codec_cxt, avCodec, NULL);
         if(ret < 0){
-            LOGE(kTAG,"openInputImage avcodec_open2");
+            LOGE(kTAG,"can not open image decoder");
             return ret;
         }
-
-        LOGE(kTAG,"openInputImage overly ->iformat->name %s",input_image_av_fmt_cxt->iformat->name);
         return ret;
     }
 
@@ -414,7 +391,7 @@ extern "C"{
     }
 
     int initOutPutVideoDecodeCodec(int w, int h){
-        AVCodec * pH264Codec = avcodec_find_decoder(AV_CODEC_ID_H264);
+        AVCodec * pH264Codec = avcodec_find_decoder(AV_CODEC_ID_MPEG4);
         if(!pH264Codec){
             LOGE(kTAG,"avcodec_find_decoder filed");
             return -1;
@@ -445,14 +422,14 @@ extern "C"{
         return ret;
     }
 
-    int openOutPutFileVideo(const char *outPutFileName){
-        int ret = avformat_alloc_output_context2(&output_video_av_fmt_cxt, NULL, "mpegts", outPutFileName);
+    int openOutPutFileVideo(const char * outPutFileName){
+        int ret = avformat_alloc_output_context2(&output_video_av_fmt_cxt, NULL, "mpegts", input_file_name);
         if(ret < 0){
             LOGE(kTAG," avformat_alloc_output_context2 failed");
             return ret;
         }
 
-        ret = avio_open2(&output_video_av_fmt_cxt->pb, outPutFileName, AVIO_FLAG_READ_WRITE, NULL, NULL);
+        ret = avio_open2(&output_video_av_fmt_cxt->pb, input_file_name, AVIO_FLAG_READ_WRITE, NULL, NULL);
         if(ret < 0){
             LOGE(kTAG," avio_open2 failed");
             return ret;
@@ -464,7 +441,6 @@ extern "C"{
         AVStream * audioStream = avformat_new_stream(output_video_av_fmt_cxt,out_video_av_codec_cxt->codec);
         audioStream->codec = out_video_av_codec_cxt;
 
-        av_dump_format(output_video_av_fmt_cxt, 0, outPutFileName, 1);
         ret = avformat_write_header(output_video_av_fmt_cxt,NULL);
         if(ret < 0){
             LOGE(kTAG," avformat_write_header failed");
@@ -473,145 +449,42 @@ extern "C"{
         return  ret;
     }
 
-    int initInputVideoFilter(AVFilterInOut *input,const char *filterName,  int inputIndex){
-//        char args[512];
-//        memset(args,0, sizeof(args));
-//        AVFilterContext *padFilterContext = input->filter_ctx;
-//
-//        auto filter = avfilter_get_by_name("buffer");
-////        auto codecContext = context[inputIndex]->streams[0]->codec;
-//        auto codecContext = inputIndex== 0 ? input_video_av_codec_cxt : input_image_av_codec_cxt;
-//
-//        snprintf(args, sizeof(args),
-//                  "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
-//                  codecContext->width, codecContext->height, codecContext->pix_fmt,
-//                  codecContext->time_base.num, codecContext->time_base.den /codecContext->ticks_per_frame,
-//                  codecContext->sample_aspect_ratio.num, codecContext->sample_aspect_ratio.den);
-//
-//        int ret = avfilter_graph_create_filter(&inputFilterContext[inputIndex],filter,filterName, args,NULL, av_filter_graph);
-//        if(ret < 0)
-//            return ret;
-//
-//        ret = avfilter_link(inputFilterContext[inputIndex],0,padFilterContext,input->pad_idx);
-        return 0;
-    }
-
-
-    int initInputVideoFilter2(AVFilterInOut * inputs,AVFilterContext ** input_filter_ctx){
-        int ret = 0;
+    int initInputVideoFilter(AVFilterInOut *input,const char *filterName,  int inputIndex)
+    {
         char args[512];
-        memset(args, 0, sizeof(args));
+        memset(args,0, sizeof(args));
+        AVFilterContext *padFilterContext = input->filter_ctx;
 
-        AVFilterContext *first_filter = inputs->filter_ctx;
-        int pad_idx = inputs->pad_idx;
-
-        const AVFilter *filter = avfilter_get_by_name("buffer");
-//  AVRational time_base = input_dec_ctx->time_base;
-        AVStream* video_st = input_video_av_fmt_cxt->streams[input_video_stream_idx];
-        AVRational time_base = video_st->time_base;
+        auto filter = avfilter_get_by_name("buffer");
+//        auto codecContext = context[inputIndex]->streams[0]->codec;
+        auto codecContext = inputIndex== 0 ? input_video_av_codec_cxt : input_image_av_codec_cxt;
 
         snprintf(args, sizeof(args),
-                 "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d:sws_param=flags=%d:frame_rate=%d/%d",
-                 input_video_av_codec_cxt->width, input_video_av_codec_cxt->height, input_video_av_codec_cxt->pix_fmt,
-                 input_video_av_codec_cxt->time_base.num, input_video_av_codec_cxt->time_base.den,
-                 input_video_av_codec_cxt->sample_aspect_ratio.num, input_video_av_codec_cxt->sample_aspect_ratio.den,
-                 SWS_BILINEAR + ((video_st->codec->flags&AV_CODEC_FLAG_BITEXACT) ? SWS_BITEXACT:0),
-                 video_st->r_frame_rate.num, video_st->r_frame_rate.den);
+                  "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
+                  codecContext->width, codecContext->height, codecContext->pix_fmt,
+                  codecContext->time_base.num, codecContext->time_base.den /codecContext->ticks_per_frame,
+                  codecContext->sample_aspect_ratio.num, codecContext->sample_aspect_ratio.den);
 
-        printf("input args = %s\n", args);
+        int ret = avfilter_graph_create_filter(&inputFilterContext[inputIndex],filter,filterName, args,NULL, av_filter_graph);
+        if(ret < 0)
+            return ret;
 
-        ret = avfilter_graph_create_filter(input_filter_ctx, filter, "src_in", args, NULL, av_filter_graph);
-        if (ret < 0 ) {
-            printf("video config input filter fail.\n");
-            return -1;
-        }
-
-        ret = avfilter_link(*input_filter_ctx, 0, first_filter, pad_idx);
-//        assert(ret >= 0);
-
-        printf("video_config_input_filter avfilter_link ret = %d\n", ret);
-
+        ret = avfilter_link(inputFilterContext[inputIndex],0,padFilterContext,input->pad_idx);
         return ret;
-    }
-
-int initInputImageFilter2(AVFilterInOut * inputs,AVFilterContext ** overlay_filter_ctx){
-        int ret = 0;
-    char args[512];
-    memset(args, 0, sizeof(args));
-
-    AVFilterContext *first_filter = inputs->filter_ctx;
-
-    int pad_idx = inputs->pad_idx;
-
-    const AVFilter *filter = avfilter_get_by_name("buffer");
-
-    //AVRational time_base = overlay_dec_ctx->time_base;
-    AVStream* overlay_st = input_image_av_fmt_cxt->streams[input_image_stream_idx];
-    AVRational time_base = overlay_st->time_base;
-
-    snprintf(args, sizeof(args),
-             "video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d:sws_param=flags=%d:frame_rate=%d/%d",
-             input_image_av_codec_cxt->width, input_image_av_codec_cxt->height, input_image_av_codec_cxt->pix_fmt,
-             time_base.num, time_base.den,
-             input_image_av_codec_cxt->sample_aspect_ratio.num, input_image_av_codec_cxt->sample_aspect_ratio.den,
-             SWS_BILINEAR + ((overlay_st->codec->flags&AV_CODEC_FLAG_BITEXACT) ? SWS_BITEXACT:0),
-             overlay_st->r_frame_rate.num, overlay_st->r_frame_rate.den);
-
-    printf("overlay args = %s\n", args);
-
-    ret = avfilter_graph_create_filter(overlay_filter_ctx, filter, "overlay_in", args, NULL, av_filter_graph);
-
-    if (ret < 0 ) {
-        printf("video config overlay filter fail.\n");
-        return -1;
-    }
-
-    ret = avfilter_link(*overlay_filter_ctx, 0, first_filter, pad_idx);
-//    assert(ret >= 0);
-
-    printf("video_config_overlay_filter ret = %d\n", ret);
-
-    avfilter_inout_free(&inputs);
-
-    return ret;
-}
-
-
-    int initOutputVideoFilter2(AVFilterInOut* outputs, AVFilterContext** out_filter_ctx)  {
-        char args[512];
-
-        AVFilterContext *last_filter = outputs->filter_ctx;
-        int pad_idx  = outputs->pad_idx;
-        const AVFilter *buffersink = avfilter_get_by_name("buffersink");
-
-        int ret = avfilter_graph_create_filter(out_filter_ctx, buffersink, "video_out", NULL, NULL, av_filter_graph);
-//        assert(ret >= 0);
-
-        if (ret < 0)
-            return ret;
-
-        ret = avfilter_link(last_filter, pad_idx, *out_filter_ctx, 0);
-//        assert(ret >= 0);
-        if (ret < 0)
-            return ret;
-
-        avfilter_inout_free(&outputs);
-
-        return 0;
     }
 
 int InitOutputFilter(AVFilterInOut *output,const char *filterName)
 {
-//    AVFilterContext *padFilterContext = output->filter_ctx;
-//    auto filter = avfilter_get_by_name("buffersink");
-//
-//
-//    int ret = avfilter_graph_create_filter(&outputFilterContext,filter,filterName, NULL,
-//                                           NULL, av_filter_graph);
-//    if(ret < 0)  return ret;
-//    ret = avfilter_link(padFilterContext,output->pad_idx,outputFilterContext,0);
+    AVFilterContext *padFilterContext = output->filter_ctx;
+    auto filter = avfilter_get_by_name("buffersink");
 
-//    return ret;
+
+    int ret = avfilter_graph_create_filter(&outputFilterContext,filter,filterName, NULL,
+                                           NULL, av_filter_graph);
+    if(ret < 0)  return ret;
+    ret = avfilter_link(padFilterContext,output->pad_idx,outputFilterContext,0);
+
+    return ret;
 }
 
 void FreeInout()
@@ -670,12 +543,9 @@ bool DecodeVideo(AVPacket* packet, AVFrame* frame,int inputIndex)
     if(hr >= 0 && gotFrame != 0)
     {
         frame->pts = packet->pts;
-        LOGE(kTAG," DecodeVideo success");
         return true;
     }
     return false;
 }
-
-
 
 }
