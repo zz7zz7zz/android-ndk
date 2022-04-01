@@ -33,6 +33,8 @@ public class SignatureActivity extends AppCompatActivity {
         sign_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                JavaSignature.verifySignature(getApplicationContext());
+
                 long start = System.currentTimeMillis();
                 mSignature.verifySignature(getApplicationContext());
                 Log.v("Testing","verifySignature cost " + (System.currentTimeMillis() -start));
