@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.module.utils.AppUtil;
 
@@ -64,18 +65,7 @@ public final class JavaSignature {
         }
         Log.v(TAG,"isPkgMatch " +isPkgMatch);
         if(!isPkgMatch){
-            Intent mIntent = new Intent(context,SignErrorActivity.class);
-            mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(mIntent);
-
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Process.killProcess(Process.myPid());
-//                    System.exit(-1);
-//                }
-//            },5000);
-            new Handler().postDelayed(new SignExitTask(),5000);
+            on_callback_verify_failed(mContext);
             return;
         }
 
@@ -127,18 +117,7 @@ public final class JavaSignature {
         }
         Log.v(TAG,"isSignMatch " +isSignMatch);
         if(!isSignMatch){
-            Intent mIntent = new Intent(context,SignErrorActivity.class);
-            mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            context.startActivity(mIntent);
-
-//            new Handler().postDelayed(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Process.killProcess(Process.myPid());
-//                    System.exit(-1);
-//                }
-//            },5000);
-            new Handler().postDelayed(new SignExitTask(),5000);
+            on_callback_verify_failed(mContext);
             return;
         }
     }
@@ -166,5 +145,25 @@ public final class JavaSignature {
             }
         }
         return sb.toString().toUpperCase();
+    }
+
+    public static void on_callback_verify_failed(Context mContext){
+        //1.弹出Toast
+        Toast.makeText(mContext,"应用校验错误，将在 5s 后关闭应用 !",Toast.LENGTH_SHORT).show();
+
+        //2.启动错误页面
+        Intent mIntent = new Intent(mContext,SignErrorActivity.class);
+        mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(mIntent);
+
+        //3.延迟关闭应用
+//            new Handler().postDelayed(new Runnable() {
+//                @Override
+//                public void run() {
+//                    Process.killProcess(Process.myPid());
+//                    System.exit(-1);
+//                }
+//            },5000);
+        new Handler().postDelayed(new SignExitTask(),5000);
     }
 }

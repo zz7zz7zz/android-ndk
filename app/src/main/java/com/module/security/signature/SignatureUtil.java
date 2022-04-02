@@ -46,9 +46,8 @@ public final class SignatureUtil {
 
     //返回对应包的签名信息
     private static Signature[] getSignatures(Context context, String packageName) {
-        PackageInfo packageInfo = null;
         try {
-            packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
             return packageInfo.signatures;
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,7 +90,7 @@ public final class SignatureUtil {
     private static String getSignatureString(Signature sig, String algorithm) {
         byte[] hexBytes = sig.toByteArray();
 
-        printByteData(hexBytes);
+        printByteData("sign " + algorithm ,hexBytes);
 
         String ret = "";
         try {
@@ -99,6 +98,8 @@ public final class SignatureUtil {
             if (digest != null) {
                 digest.update(hexBytes);
                 byte[] digestBytes = digest.digest();
+
+                printByteData("digest "+ algorithm,digestBytes);
 
                 StringBuilder sb = new StringBuilder(digestBytes.length *2 + (digestBytes.length-1));
                 for (int i = 0;i<digestBytes.length;i++) {
@@ -125,11 +126,11 @@ public final class SignatureUtil {
         return ret;
     }
 
-    private static void printByteData(byte[] hexBytes ){
+    private static void printByteData(String prefix,byte[] hexBytes ){
 
         //打印byte值
         StringBuilder sb1 = new StringBuilder(hexBytes.length);
-        sb1.append("sign[] = {");
+        sb1.append(prefix+"[] = {");
 
         for (int i = 0;i<hexBytes.length;i++) {
             String str = ""+hexBytes[i];
@@ -164,8 +165,12 @@ public final class SignatureUtil {
 //        sb1.append("};");
 
 
-        Log.v("Testing","printByteData length "+hexBytes.length  + " sb1 " + sb1.length());
-        Log.v("Testing",sb1.substring(0,sb1.length()/2));
-        Log.v("Testing",sb1.substring(sb1.length()/2));
+        Log.v("Testing",prefix+" printByteData length "+hexBytes.length  + " sb1 " + sb1.length());
+        if(sb1.length() > 500){
+            Log.v("Testing ","first half : " + sb1.substring(0,sb1.length()/2));
+            Log.v("Testing","the second half:  "+sb1.substring(sb1.length()/2));
+        }else{
+            Log.v("Testing ","all : " + sb1.toString());
+        }
     }
 }

@@ -22,9 +22,9 @@ public class SignatureActivity extends AppCompatActivity {
 
 //        Toast.makeText(this,"",Toast.LENGTH_LONG).show();
         StringBuilder sb = new StringBuilder();
-        sb.append("MD5 ").append("\n").append(SignatureUtil.getMd5(this)).append("\n\n").
-        append("SHA-1 ").append("\n").append(SignatureUtil.getSha1(this)).append("\n\n").
-        append("SHA-256 ").append("\n").append(SignatureUtil.getSha256(this)).append("\n\n");
+        sb.append("MD5:").append("\n").append(SignatureUtil.getMd5(this)).append("\n\n").
+        append("SHA-1:").append("\n").append(SignatureUtil.getSha1(this)).append("\n\n").
+        append("SHA-256:").append("\n").append(SignatureUtil.getSha256(this)).append("\n\n");
 
         TextView sign_from_java = findViewById(R.id.sign_from_java);
         sign_from_java.setText(sb.toString());
