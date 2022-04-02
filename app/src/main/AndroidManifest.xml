@@ -24,8 +24,8 @@
 
         <activity android:name="com.module.study.type.StudyActivity"/>
 
-        <activity android:name=".signature.SignatureActivity"/>
-        <activity android:name=".signature.SignErrorActivity"/>
+        <activity android:name="com.lib.security.signature.SignatureActivity"/>
+        <activity android:name="com.lib.security.signature.SignErrorActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
 
         <activity android:name="com.module.media.FFmpegActivity" />
 

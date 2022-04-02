@@ -19,5 +19,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep public class com.module.utils.AppUtil
--keep public class com.module.security.signature.SignExitTask
+-keep public class com.lib.utils.AppUtil
+-keep public class com.lib.security.signature.SignExitTask

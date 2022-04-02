@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.module.media.FFmpegActivity;
 import com.module.net.socket.CSocketClientActivity;
 import com.module.security.R;
-import com.module.security.signature.SignatureActivity;
+import com.lib.security.signature.SignatureActivity;
 import com.module.study.type.StudyActivity;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {

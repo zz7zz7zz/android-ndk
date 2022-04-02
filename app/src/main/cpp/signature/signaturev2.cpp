@@ -27,7 +27,7 @@ extern "C" {
 
     void on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
 
-    JNIEXPORT jint JNICALL Java_com_module_security_signature_Signature_verifySignature(JNIEnv *env, jobject thiz,
+    JNIEXPORT jint JNICALL Java_com_lib_security_signature_Signature_verifySignature(JNIEnv *env, jobject thiz,
                                                           jobject m_context) {
 
         //1.对比包名
@@ -48,7 +48,7 @@ extern "C" {
 //            on_callback_verify_failed(mContext);
 //            return;
 //        }
-        jclass      jcls_AppUtil = env->FindClass("com/module/utils/AppUtil");
+        jclass      jcls_AppUtil = env->FindClass("com/lib/utils/AppUtil");
         jmethodID   jmd_AppUtil_getApplication = env->GetStaticMethodID(jcls_AppUtil, "getApplication", "()Landroid/app/Application;");
         jobject     jobj_application = env->CallStaticObjectMethod(jcls_AppUtil, jmd_AppUtil_getApplication);
         if(jobj_application == NULL) {
@@ -229,19 +229,19 @@ extern "C" {
             on_callback_verify_failed(env,jcls_Context,jobj_application);
             return -2;
         }
-        LOGV("Testing","Java_com_module_security_signature_SignatureActivity_verifySignature success");
+        LOGV("Testing","from native verifySignature success");
         return 0;
     }
 
     void on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context){
         //1.弹出Toast
-//        Toast.makeText(mContext,"应用校验错误，将在 5s 后关闭应用 !",Toast.LENGTH_SHORT).show();
+//        Toast.makeText(mContext,"应用校验错误，将在 10s 后关闭应用 !",Toast.LENGTH_SHORT).show();
         jclass      jcls_Toast = env->FindClass("android/widget/Toast");
         jmethodID   jmd_Toast_makeText = env->GetStaticMethodID(jcls_Toast, "makeText", "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;");
         jfieldID    jfd_Toast_LENGTH_SHORT = env->GetStaticFieldID(jcls_Toast, "LENGTH_SHORT", "I");
 
         jint        value_length_long = env->GetStaticIntField(jcls_Toast, jfd_Toast_LENGTH_SHORT);
-        jobject     jobj_Toast = env->CallStaticObjectMethod(jcls_Toast, jmd_Toast_makeText, m_context, env->NewStringUTF("应用校验错误，将在 8s 后关闭应用 !"), value_length_long);
+        jobject     jobj_Toast = env->CallStaticObjectMethod(jcls_Toast, jmd_Toast_makeText, m_context, env->NewStringUTF("⚠ 签名校验失败， 应用将在 10 秒后将关闭应用，请前往官方下载正版应用"), value_length_long);
 
         jmethodID jmd_show = env->GetMethodID(jcls_Toast,"show", "()V");
         env->CallVoidMethod(jobj_Toast,jmd_show);
@@ -253,7 +253,7 @@ extern "C" {
 
         jclass      jcls_Intent = env->FindClass("android/content/Intent");
         jmethodID   jmd_Intent_init  = env->GetMethodID(jcls_Intent,"<init>", "(Landroid/content/Context;Ljava/lang/Class;)V");
-        jclass      jcls_SignErrorActivity = env->FindClass("com/module/security/signature/SignErrorActivity");
+        jclass      jcls_SignErrorActivity = env->FindClass("com/lib/security/signature/SignErrorActivity");
 
         jobject     jobj_Intent = env->NewObject(jcls_Intent,jmd_Intent_init,m_context,jcls_SignErrorActivity);
 
@@ -271,7 +271,7 @@ extern "C" {
 
         //3.延迟关闭应用
 //        new Handler().postDelayed(new SignExitTask(),5000);
-        jclass     jcls_SignExitTask = env->FindClass("com/module/security/signature/SignExitTask");
+        jclass     jcls_SignExitTask = env->FindClass("com/lib/security/signature/SignExitTask");
         jmethodID  jmd_SignExitTask_init  = env->GetMethodID(jcls_SignExitTask,"<init>", "()V");
         jobject    jobj_SignExitTask = env->NewObject(jcls_SignExitTask,jmd_SignExitTask_init);
 
@@ -280,7 +280,7 @@ extern "C" {
         jobject    jobj_Handler = env->NewObject(jcls_Handler,jmd_Handler_init);
 
         jmethodID  jmd_postDelayed = env->GetMethodID(jcls_Handler,"postDelayed", "(Ljava/lang/Runnable;J)Z");
-        env->CallBooleanMethod(jobj_Handler,jmd_postDelayed,jobj_SignExitTask,(long long)(8000+500));
+        env->CallBooleanMethod(jobj_Handler,jmd_postDelayed,jobj_SignExitTask,(long long)(10000+500));
     }
 
 #ifdef __cplusplus

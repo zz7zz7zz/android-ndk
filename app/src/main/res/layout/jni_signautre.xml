@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".signature.SignatureActivity"
+    tools:context="com.lib.security.signature.SignatureActivity"
     android:orientation="vertical">
 
     <TextView

@@ -1,5 +1,5 @@
 
-package com.module.security.signature;
+package com.lib.security.signature;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.module.utils.AppUtil;
+import com.lib.utils.AppUtil;
 
 import java.security.MessageDigest;
 

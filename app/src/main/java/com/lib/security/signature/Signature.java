@@ -1,4 +1,4 @@
-package com.module.security.signature;
+package com.lib.security.signature;
 
 import android.content.Context;
 
