@@ -32,14 +32,18 @@ public class SignatureActivity extends AppCompatActivity {
         sign_verify.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                JavaSignature.verifySignature(getApplicationContext());
 
                 long start = System.currentTimeMillis();
-                int errCode = mSignature.verifySignature(getApplicationContext());
-                if(errCode == 0 ){
-                    Toast.makeText(getApplicationContext(),"签名校验成功",Toast.LENGTH_SHORT).show();
+                int errCodeJava = JavaSignature.verifySignature(getApplicationContext());
+                Log.v("Testing","verifySignature errCodeJava "+errCodeJava+" cost " + (System.currentTimeMillis() -start));
+
+                start = System.currentTimeMillis();
+                int errCodeNative = mSignature.verifySignature(getApplicationContext());
+                Log.v("Testing","verifySignature errCodeNative "+errCodeNative+" cost " + (System.currentTimeMillis() -start));
+
+                if(errCodeNative == 0 ){
+                    Toast.makeText(getApplicationContext(),"Native签名校验成功",Toast.LENGTH_SHORT).show();
                 }
-                Log.v("Testing","verifySignature errCode "+errCode+" cost " + (System.currentTimeMillis() -start));
             }
         });
     }

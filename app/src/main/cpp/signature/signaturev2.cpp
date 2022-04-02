@@ -122,10 +122,13 @@ extern "C" {
 
         env->DeleteLocalRef(jobj_packageInfo);
 
-        jsize length = env->GetArrayLength(value_signatures);
-        if(length <= 0){
-            env->DeleteLocalRef(value_signatures);
+        if(NULL == value_signatures){
             return -22;
+        }
+        jsize length = env->GetArrayLength(value_signatures);
+        if(length == 0){
+            env->DeleteLocalRef(value_signatures);
+            return -23;
         }
 
         jobject value_signatures_0 = env->GetObjectArrayElement(value_signatures, 0);
@@ -135,12 +138,6 @@ extern "C" {
         jbyteArray value_byteArray = static_cast<jbyteArray>(env->CallObjectMethod(value_signatures_0, jm_toByteArray));
 
         env->DeleteLocalRef(value_signatures_0);
-
-        length = env->GetArrayLength(value_byteArray);
-        if(length <= 0){
-            env->DeleteLocalRef(value_byteArray);
-            return -23;
-        }
 
         /*
             byte[] digestBytes = null;
@@ -171,8 +168,14 @@ extern "C" {
         env->CallVoidMethod(jobj_MessageDigest,jm_update,value_byteArray);
         jmethodID   jmd_digest = env->GetMethodID(jcls_MessageDigest, "digest", "()[B");
         jbyteArray value_byteArray2 = static_cast<jbyteArray> (env->CallObjectMethod(jobj_MessageDigest,jmd_digest));
-        length = env->GetArrayLength(value_byteArray2);
+        if(value_byteArray2 == NULL){
+            return -26;
+        }
 
+        length = env->GetArrayLength(value_byteArray2);
+        if( length == 0){
+            return -27;
+        }
 //        StringBuilder sb = new StringBuilder(digestBytes.length *2 + (digestBytes.length-1));
 //        for (int i = 0;i<digestBytes.length;i++) {
 ////          String str = Integer.toString(0xFF & digestBytes[i], 16);//原始值
@@ -206,7 +209,7 @@ extern "C" {
         char *encrypt0xffString = (char *) malloc(size);
         memset(encrypt0xffString, 0, sizeof(encrypt0xffString));
         if(encrypt0xffString == NULL){
-            return -26;
+            return -31;
         }
         char buf[3];
         for(int i = 0;i<length;i++){

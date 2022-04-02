@@ -45,7 +45,7 @@ public final class JavaSignature {
             "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC"//陌遇测试
     };
 
-    public static void verifySignature(Context mContext){
+    public static int verifySignature(Context mContext){
         if(null == mContext){
             throw new NullPointerException("param mContext is null");
         }
@@ -66,31 +66,42 @@ public final class JavaSignature {
         Log.v(TAG,"isPkgMatch " +isPkgMatch);
         if(!isPkgMatch){
             on_callback_verify_failed(mContext);
-            return;
+            return -1;
         }
 
         //2.签名对比
-        byte[] signBytes = null;
+        byte[] signBytes;
         try {
             PackageInfo packageInfo = context.getPackageManager().getPackageInfo(pkg, PackageManager.GET_SIGNATURES);
             Signature[] signs = packageInfo.signatures;
-            if ((signs == null) || (signs.length == 0)) {
-                return;
+            if (signs == null) {
+                return -22;
+            }else if(signs.length == 0){
+                return -23;
             }
             signBytes = signs[0].toByteArray();
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
+            return -21;
         }
 
-        byte[] digestBytes = null;
+        byte[] digestBytes;
         try {
             MessageDigest digest = MessageDigest.getInstance("MD5");//"MD5"/"SHA-1"/"SHA-256"
             if (digest != null) {
                 digest.update(signBytes);
                 digestBytes = digest.digest();
+            }else{
+                return -25;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return -24;
+        }
+        if(null == digestBytes){
+            return -26;
+        }else if( digestBytes.length == 0){
+            return -27;
         }
 
         StringBuilder sb = new StringBuilder(digestBytes.length *2 + (digestBytes.length-1));
@@ -118,8 +129,10 @@ public final class JavaSignature {
         Log.v(TAG,"isSignMatch " +isSignMatch);
         if(!isSignMatch){
             on_callback_verify_failed(mContext);
-            return;
+            return -2;
         }
+
+        return 0;
     }
 
     public static String[] encrypt0xff(String[] md5Signs){
