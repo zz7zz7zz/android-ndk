@@ -111,23 +111,16 @@ extern "C" {
         jmethodID   jmd_getPackageInfo = env->GetMethodID(jcls_packageManager, "getPackageInfo", "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;");
         jobject     jobj_packageInfo = env->CallObjectMethod(jobj_packageManager, jmd_getPackageInfo, value_packageName, value_get_signatures);
 
-        env->DeleteLocalRef(jcls_packageManager);
-        env->DeleteLocalRef(jobj_packageManager);
-        env->DeleteLocalRef(value_packageName);
-
         //5.Signature[0]
         jclass      jcls_packageInfo = (*env).GetObjectClass(jobj_packageInfo);
         jfieldID    jfd_signatures = env->GetFieldID(jcls_packageInfo, "signatures", "[Landroid/content/pm/Signature;");
         jobjectArray value_signatures = static_cast<jobjectArray>(env->GetObjectField(jobj_packageInfo, jfd_signatures));
-
-        env->DeleteLocalRef(jobj_packageInfo);
 
         if(NULL == value_signatures){
             return -22;
         }
         jsize length = env->GetArrayLength(value_signatures);
         if(length == 0){
-            env->DeleteLocalRef(value_signatures);
             return -23;
         }
 
@@ -136,8 +129,6 @@ extern "C" {
         jclass jcls_Signature = env->FindClass("android/content/pm/Signature");
         jmethodID jm_toByteArray = env->GetMethodID(jcls_Signature, "toByteArray", "()[B");
         jbyteArray value_byteArray = static_cast<jbyteArray>(env->CallObjectMethod(value_signatures_0, jm_toByteArray));
-
-        env->DeleteLocalRef(value_signatures_0);
 
         /*
             byte[] digestBytes = null;
@@ -233,17 +224,11 @@ extern "C" {
         free(encrypt0xffString);
         encrypt0xffString = NULL;
 
-        env->DeleteLocalRef(value_byteArray2);
-        env->DeleteLocalRef(value_byteArray);
 
         if(!bSignMatch){
             on_callback_verify_failed(env,jcls_Context,jobj_application);
-            env->DeleteLocalRef(jcls_Context);
-            env->DeleteLocalRef(value_signatures);
             return -2;
         }
-        env->DeleteLocalRef(jcls_Context);
-        env->DeleteLocalRef(value_signatures);
         LOGV("Testing","Java_com_module_security_signature_SignatureActivity_verifySignature success");
         return 0;
     }
@@ -260,11 +245,6 @@ extern "C" {
 
         jmethodID jmd_show = env->GetMethodID(jcls_Toast,"show", "()V");
         env->CallVoidMethod(jobj_Toast,jmd_show);
-
-
-        env->DeleteLocalRef(jcls_Toast);
-        env->DeleteLocalRef(jobj_Toast);
-
 
         //2.启动错误页面
 //        Intent mIntent = new Intent(mContext,SignErrorActivity.class);
@@ -288,10 +268,6 @@ extern "C" {
 
         jmethodID  jmd_startActivity = env->GetMethodID(jcls_Context,"startActivity", "(Landroid/content/Intent;)V");
         env->CallVoidMethod(m_context,jmd_startActivity,jobj_Intent);
-
-        env->DeleteLocalRef(jcls_Intent);
-        env->DeleteLocalRef(jcls_SignErrorActivity);
-        env->DeleteLocalRef(jobj_Intent);
 
         //3.延迟关闭应用
 //        new Handler().postDelayed(new SignExitTask(),5000);
