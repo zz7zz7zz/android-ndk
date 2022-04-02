@@ -21,7 +21,7 @@ extern "C" {
         };
 
         const char md5SignEncrypt0xff[][48]={
-            "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:0f",//ndk测试
+            "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
             "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC"//陌遇测试
         };
 
@@ -91,6 +91,12 @@ extern "C" {
 
         jmethodID   jmd_getPackageManager = env->GetMethodID(jcls_Context, "getPackageManager", "()Landroid/content/pm/PackageManager;");
         jobject     jobj_packageManager = env->CallObjectMethod(jobj_application, jmd_getPackageManager);
+        jthrowable exc = env->ExceptionOccurred();
+        if (exc) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return -21;
+        }
 
         //2.mContext.getPackageName()
 //        jmethodID   jmd_getPackageName = env->GetMethodID(jcls_Context, "getPackageName", "()Ljava/lang/String;");
@@ -119,7 +125,7 @@ extern "C" {
         jsize length = env->GetArrayLength(value_signatures);
         if(length <= 0){
             env->DeleteLocalRef(value_signatures);
-            return -21;
+            return -22;
         }
 
         jobject value_signatures_0 = env->GetObjectArrayElement(value_signatures, 0);
@@ -133,7 +139,7 @@ extern "C" {
         length = env->GetArrayLength(value_byteArray);
         if(length <= 0){
             env->DeleteLocalRef(value_byteArray);
-            return -22;
+            return -23;
         }
 
         /*
@@ -152,8 +158,14 @@ extern "C" {
         jclass      jcls_MessageDigest = env->FindClass("java/security/MessageDigest");
         jmethodID   jmd_MessageDigest_getInstance = env->GetStaticMethodID(jcls_MessageDigest, "getInstance", "(Ljava/lang/String;)Ljava/security/MessageDigest;");
         jobject     jobj_MessageDigest = env->CallStaticObjectMethod(jcls_MessageDigest, jmd_MessageDigest_getInstance,env->NewStringUTF("MD5"));
+        exc = env->ExceptionOccurred();
+        if (exc) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+            return -24;
+        }
         if(jobj_MessageDigest == NULL){
-            return -21;
+            return -25;
         }
         jmethodID jm_update = env->GetMethodID(jcls_MessageDigest, "update", "([B)V");
         env->CallVoidMethod(jobj_MessageDigest,jm_update,value_byteArray);
@@ -194,7 +206,7 @@ extern "C" {
         char *encrypt0xffString = (char *) malloc(size);
         memset(encrypt0xffString, 0, sizeof(encrypt0xffString));
         if(encrypt0xffString == NULL){
-            return -22;
+            return -26;
         }
         char buf[3];
         for(int i = 0;i<length;i++){

@@ -2,7 +2,6 @@ package com.module.security.signature;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,8 +35,11 @@ public class SignatureActivity extends AppCompatActivity {
                 JavaSignature.verifySignature(getApplicationContext());
 
                 long start = System.currentTimeMillis();
-                mSignature.verifySignature(getApplicationContext());
-                Log.v("Testing","verifySignature cost " + (System.currentTimeMillis() -start));
+                int errCode = mSignature.verifySignature(getApplicationContext());
+                if(errCode == 0 ){
+                    Toast.makeText(getApplicationContext(),"签名校验成功",Toast.LENGTH_SHORT).show();
+                }
+                Log.v("Testing","verifySignature errCode "+errCode+" cost " + (System.currentTimeMillis() -start));
             }
         });
     }
