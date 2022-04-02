@@ -40,7 +40,7 @@ public final class JavaSignature {
 //                 ||
 //                \||/
 //    加密后值
-    public static final String[] md5SignMapping= {
+    public static final String[] md5SignEncrypt0xff = {
             "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
             "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC"//陌遇测试
     };
@@ -107,10 +107,10 @@ public final class JavaSignature {
         }
         String MD5Sign = sb.toString().toUpperCase();
 
-//        String[] md5SignOriginal = encrypt0xff(md5SignMapping);
+//        String[] md5SignOriginal = encrypt0xff(md5SignEncrypt0xff);
         boolean isSignMatch = false;
-        for (int i = 0; i < md5SignMapping.length; i++) {
-            if(md5SignMapping[i].equals(MD5Sign)){
+        for (int i = 0; i < md5SignEncrypt0xff.length; i++) {
+            if(md5SignEncrypt0xff[i].equals(MD5Sign)){
                 isSignMatch = true;
                 break;
             }

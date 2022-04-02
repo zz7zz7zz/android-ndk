@@ -2,7 +2,6 @@ package com.module.security.signature;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Process;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -13,7 +12,7 @@ public class SignErrorActivity extends AppCompatActivity {
 
 
     private Handler mHandler = new Handler();
-    private int max_count_down_ms = 5+1;
+    private int max_count_down_ms = 8;
 
     private TextView sign_error_prompt;
 
@@ -29,12 +28,12 @@ public class SignErrorActivity extends AppCompatActivity {
 
                 max_count_down_ms --;
                 if(max_count_down_ms < 0){
-                    Process.killProcess(Process.myPid());
-                    System.exit(0);
+//                    Process.killProcess(Process.myPid());
+//                    System.exit(-1);
                     return;
                 }
 
-                String str = "⚠️ sign error , The application will exit after " + max_count_down_ms + (max_count_down_ms >1 ?  " seconds ":" second ");
+                String str = "⚠ 签名校验失败， " + max_count_down_ms + "秒后将关闭应用，请前往官方下载正版应用";
                 sign_error_prompt.setText(str);
                 mHandler.postDelayed(this,1000);
             }

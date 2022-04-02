@@ -8,6 +8,6 @@ public class Signature {
         System.loadLibrary("signature");
     }
 
-    public native void verifySignature(Context mContext);
+    public native int verifySignature(Context mContext);
 
 }
