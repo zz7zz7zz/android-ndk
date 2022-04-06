@@ -34,7 +34,7 @@
             <TextView
                 android:id="@+id/security_sign_result_click"
                 android:layout_width="100dp"
-                android:layout_height="40dp"
+                android:layout_height="44dp"
                 android:layout_alignRight="@id/security_sign_result"
                 android:layout_alignBottom="@id/security_sign_result"
                 android:background="@drawable/security_sign_copy_bg"

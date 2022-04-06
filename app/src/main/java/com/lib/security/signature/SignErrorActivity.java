@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -119,7 +120,9 @@ public class SignErrorActivity extends AppCompatActivity {
         int    versionCode = 0;
         String brand = android.os.Build.BRAND;
         String model = android.os.Build.MODEL;
-        String CPU_ABI = android.os.Build.CPU_ABI;
+        String cpu_abi = android.os.Build.CPU_ABI;
+        int    sdk_int =  Build.VERSION.SDK_INT;
+        String systemVersion =  android.os.Build.VERSION.RELEASE;
 
         try {
             PackageManager pm = getPackageManager();
@@ -131,12 +134,15 @@ public class SignErrorActivity extends AppCompatActivity {
         }
 
         StringBuilder sb = new StringBuilder(256);
+        sb.append("uid: ").append("").append("\n");
         sb.append("channel: ").append("gp").append("\n");
         sb.append("versionName: ").append(versionName).append("\n");
         sb.append("versionCode: ").append(versionCode).append("\n");
+
+        sb.append("systemVersion: ").append("Android ").append(systemVersion).append(" / level ").append(sdk_int).append("\n");
         sb.append("brand: ").append(brand).append("\n");
         sb.append("model: ").append(model).append("\n");
-        sb.append("cpu_abi: ").append(CPU_ABI);
+        sb.append("cpu_abi: ").append(cpu_abi);
 
         return sb.toString();
     }
