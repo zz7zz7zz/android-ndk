@@ -8,11 +8,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.lib.security.Security;
 import com.module.security.R;
 
 public class SignatureActivity extends AppCompatActivity {
-
-    private Signature mSignature = new Signature();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,7 @@ public class SignatureActivity extends AppCompatActivity {
                 Log.v("Testing","verifySignature errCodeJava "+errCodeJava+" cost " + (System.currentTimeMillis() -start));
 
                 start = System.currentTimeMillis();
-                int errCodeNative = mSignature.verifySignature(getApplicationContext());
+                int errCodeNative = Security.doSecurityCheck(getApplicationContext());
                 Log.v("Testing","verifySignature errCodeNative "+errCodeNative+" cost " + (System.currentTimeMillis() -start));
 
                 if(errCodeNative == 0 ){
