@@ -33,7 +33,7 @@ public class SignErrorActivity extends AppCompatActivity {
         setContentView(R.layout.security_signautre_error);
 
         security_sign_error_prompt = findViewById(R.id.security_sign_error_prompt);
-        mHandler.postDelayed(new Runnable() {
+        mHandler.post(new Runnable() {
             @Override
             public void run() {
 
@@ -49,7 +49,7 @@ public class SignErrorActivity extends AppCompatActivity {
                 security_sign_error_prompt.setVisibility(View.VISIBLE);
                 mHandler.postDelayed(this,1000);
             }
-        },1000);
+        });
     }
 
     @Override

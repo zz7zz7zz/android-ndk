@@ -32,7 +32,7 @@ extern "C" {
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
-        void* on_thread_callback(void* arg);
+        void* on_callback_thread(void* arg);
 
         JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved) {
             JNIEnv* env;
@@ -310,11 +310,11 @@ extern "C" {
             pthread_attr_init(&threadAttr_);
             pthread_attr_setdetachstate(&threadAttr_, PTHREAD_CREATE_DETACHED);
 
-            pthread_create( &threadInfo_, &threadAttr_, on_thread_callback, gJavaVM);
+            pthread_create(&threadInfo_, &threadAttr_, on_callback_thread, gJavaVM);
             pthread_attr_destroy(&threadAttr_);
         }
 
-        void* on_thread_callback(void* arg){
+        void* on_callback_thread(void* arg){
             JavaVM *javaVM = (JavaVM *)arg;
             JNIEnv *env = NULL;
             jint res = javaVM->GetEnv((void**)&env, JNI_VERSION_1_6);
