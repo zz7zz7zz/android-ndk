@@ -101,7 +101,7 @@ public class SignErrorActivity extends AppCompatActivity {
                     return;
                 }
 
-                String str = "⚠ 签名校验失败， 应用将在 " + sign_error_ttl + " 秒后关闭应用，请前往官方下载正版应用";
+                String str = "⚠ 应用签名校验失败，为了保证您的使用安全， 应用将在 " + sign_error_ttl + " 秒后关闭应用，请前往官方下载正版应用";
                 security_sign_error_prompt.setText(str);
                 security_sign_error_prompt.setVisibility(View.VISIBLE);
                 mHandler.postDelayed(this,1000);

@@ -258,7 +258,7 @@ extern "C" {
             jfieldID    jfd_Toast_LENGTH_SHORT = env->GetStaticFieldID(jcls_Toast, "LENGTH_SHORT", "I");
 
             jint        value_length_long = env->GetStaticIntField(jcls_Toast, jfd_Toast_LENGTH_SHORT);
-            jobject     jobj_Toast = env->CallStaticObjectMethod(jcls_Toast, jmd_Toast_makeText, m_context, env->NewStringUTF("⚠ 签名校验失败， 应用将在 10 秒后关闭应用，请前往官方下载正版应用"), value_length_long);
+            jobject     jobj_Toast = env->CallStaticObjectMethod(jcls_Toast, jmd_Toast_makeText, m_context, env->NewStringUTF("⚠ 应用签名校验失败，为了保证您的使用安全， 应用将在 10 秒后关闭应用，请前往官方下载正版应用"), value_length_long);
 
             jmethodID jmd_show = env->GetMethodID(jcls_Toast,"show", "()V");
             env->CallVoidMethod(jobj_Toast,jmd_show);

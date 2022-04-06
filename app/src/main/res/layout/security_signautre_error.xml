@@ -51,7 +51,8 @@
                 android:id="@+id/security_sign_error_prompt"
                 android:layout_below="@id/security_sign_result"
                 android:layout_width="wrap_content"
-                android:layout_height="80dp"
+                android:layout_height="wrap_content"
+                android:minHeight="80dp"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="30dp"
                 android:layout_marginTop="15dp"
@@ -62,7 +63,7 @@
                 android:textSize="16sp"
                 android:visibility="invisible"
                 tools:visibility="visible"
-                tools:text="⚠ 签名校验失败， 应用将在 15 秒后关闭应用，请前往官方下载正版应用"/>
+                tools:text="⚠ 应用签名校验失败，为了保证您的使用安全， 应用将在 15 秒后关闭应用，请前往官方下载正版应用"/>
         </RelativeLayout>
     </FrameLayout>
 
