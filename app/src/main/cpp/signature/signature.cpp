@@ -13,7 +13,7 @@ extern "C" {
         #include <pthread.h>
 
         static const char* kTAG = "Testing";
-        static const int sign_error_ttl = 15;//10秒后退出应用
+        static const int sign_error_ttl = 15;//15秒后退出应用
         JavaVM  *gJavaVM;
 
         const char* pkgs[] = {

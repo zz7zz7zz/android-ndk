@@ -23,7 +23,7 @@ import java.util.Date;
 public class SignErrorActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
-    private int sign_error_ttl;
+    private int sign_error_ttl = 15;
 
     private TextView security_sign_result;
     private TextView security_sign_error_prompt;
@@ -37,7 +37,7 @@ public class SignErrorActivity extends AppCompatActivity {
 
         Intent mIntent = getIntent();
         if(null != mIntent){
-            sign_error_ttl = mIntent.getIntExtra("sign_error_ttl",10);
+            sign_error_ttl = mIntent.getIntExtra("sign_error_ttl",sign_error_ttl);
         }
         setContentView(R.layout.security_signautre_error);
 
