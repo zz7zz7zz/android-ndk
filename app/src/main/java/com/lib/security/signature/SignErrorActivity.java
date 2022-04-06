@@ -131,11 +131,12 @@ public class SignErrorActivity extends AppCompatActivity {
         }
 
         StringBuilder sb = new StringBuilder(256);
+        sb.append("channel: ").append("gp").append("\n");
         sb.append("versionName: ").append(versionName).append("\n");
         sb.append("versionCode: ").append(versionCode).append("\n");
         sb.append("brand: ").append(brand).append("\n");
         sb.append("model: ").append(model).append("\n");
-        sb.append("CPU_ABI: ").append(CPU_ABI);
+        sb.append("cpu_abi: ").append(CPU_ABI);
 
         return sb.toString();
     }
