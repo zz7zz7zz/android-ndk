@@ -7,6 +7,8 @@ import android.content.pm.Signature;
 import android.util.Log;
 
 
+import com.module.security.BuildConfig;
+
 import java.security.MessageDigest;
 
 
@@ -103,10 +105,8 @@ public final class SignatureUtil {
 
                 StringBuilder sb = new StringBuilder(digestBytes.length *2 + (digestBytes.length-1));
                 for (int i = 0;i<digestBytes.length;i++) {
-
 //--------------------------old--------------------------
 //                    sb.append((Integer.toHexString((digestBytes[i] & 0xFF) | 0x100)).substring(1, 3));
-
 //--------------------------new--------------------------
                     String str = Integer.toString(0xFF & digestBytes[i], 16);
                     if (str.length() == 1) {
@@ -127,11 +127,12 @@ public final class SignatureUtil {
     }
 
     private static void printByteData(String prefix,byte[] hexBytes ){
-
+        if(!BuildConfig.DEBUG){
+            return;
+        }
         //打印byte值
         StringBuilder sb1 = new StringBuilder(hexBytes.length);
         sb1.append(prefix+"[] = {");
-
         for (int i = 0;i<hexBytes.length;i++) {
             String str = ""+hexBytes[i];
             sb1.append(str);
@@ -147,7 +148,6 @@ public final class SignatureUtil {
         //打印int价值
 //        StringBuilder sb1 = new StringBuilder(hexBytes.length);
 //        sb1.append("sign[] = {");
-//
 //        for (int i = 0;i<hexBytes.length;i++) {
 //            sb1.append("0x");
 //            String str = Integer.toString(0xFF & hexBytes[i], 16);
@@ -163,7 +163,6 @@ public final class SignatureUtil {
 //            }
 //        }
 //        sb1.append("};");
-
 
         Log.v("Testing",prefix+" printByteData length "+hexBytes.length  + " sb1 " + sb1.length());
         if(sb1.length() > 500){

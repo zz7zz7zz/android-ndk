@@ -204,6 +204,14 @@ extern "C" {
             jmethodID  jmd_startActivity = env->GetMethodID(jcls_Context,"startActivity", "(Landroid/content/Intent;)V");
             env->CallVoidMethod(m_context,jmd_startActivity,jobj_Intent);
 
+            //未将SignErrorActivity 注册进AndroidManifest.xml时不报错
+            jthrowable exc = env->ExceptionOccurred();
+            if (exc) {
+                LOGV(kTAG,"已抛出异常，未将SignErrorActivity注册进AndroidManifest.xml中，但是仍然会在15秒退出程序");
+                env->ExceptionDescribe();
+                env->ExceptionClear();
+            }
+
             //3.2.通过创建线程的方式
             pthread_t       threadInfo_;
             pthread_attr_t  threadAttr_;
