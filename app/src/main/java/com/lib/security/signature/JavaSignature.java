@@ -20,6 +20,7 @@ import java.security.MessageDigest;
 public final class JavaSignature {
 
     private static final String TAG = "JavaSignature";
+    private static final int sign_error_ttl = 15;//15秒后退出应用
 
     public static final String[] pkgs= {
             "com.module.ndk",//ndk测试
@@ -162,7 +163,7 @@ public final class JavaSignature {
 
     public static void on_callback_verify_failed(Context mContext){
         //1.弹出Toast
-        Toast.makeText(mContext,"应用校验错误，将在 5s 后关闭应用 !",Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext,"(Java版本)⚠ 签名校验失败， 应用将在 " + sign_error_ttl + " 秒后关闭应用，请前往官方下载正版应用",Toast.LENGTH_SHORT).show();
 
         //2.启动错误页面
         Intent mIntent = new Intent(mContext,SignErrorActivity.class);
