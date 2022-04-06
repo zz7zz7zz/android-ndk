@@ -1,25 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:background="#000000"
-    android:orientation="vertical">
+    android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/security_sign_error_prompt"
-        android:layout_width="wrap_content"
-        android:layout_height="80dp"
-        android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"
-        android:gravity="center_vertical"
-        android:padding="12dp"
-        android:background="@drawable/security_sign_error_bg"
-        android:textColor="#000000"
-        android:textSize="16sp"
-        android:visibility="invisible"
-        tools:visibility="visible"
-        tools:text="⚠ 签名校验失败， 应用将在 10 秒后关闭应用，请前往官方下载正版应用"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="vertical">
 
-</LinearLayout>
+            <TextView
+                android:id="@+id/security_sign_result"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:paddingBottom="60dp"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:background="@drawable/security_sign_result_bg"
+                android:textColor="#000000"
+                android:textSize="14sp"
+                android:visibility="visible"
+                tools:text="信息如下"/>
+
+            <TextView
+                android:id="@+id/security_sign_result_click"
+                android:layout_width="100dp"
+                android:layout_height="40dp"
+                android:layout_alignRight="@id/security_sign_result"
+                android:layout_alignBottom="@id/security_sign_result"
+                android:background="@drawable/security_sign_copy_bg"
+                android:gravity="center"
+                android:padding="12dp"
+                android:textColor="#FFFFFF"
+                android:textSize="14sp"
+                android:text="点击复制"/>
+
+            <TextView
+                android:id="@+id/security_sign_error_prompt"
+                android:layout_below="@id/security_sign_result"
+                android:layout_width="wrap_content"
+                android:layout_height="80dp"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:padding="12dp"
+                android:background="@drawable/security_sign_error_bg"
+                android:textColor="#000000"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                tools:visibility="visible"
+                tools:text="⚠ 签名校验失败， 应用将在 10 秒后关闭应用，请前往官方下载正版应用"/>
+        </RelativeLayout>
+    </FrameLayout>
+
+</ScrollView>

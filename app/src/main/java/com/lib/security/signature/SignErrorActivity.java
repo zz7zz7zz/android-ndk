@@ -1,6 +1,9 @@
 package com.lib.security.signature;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
@@ -8,15 +11,21 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.module.security.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class SignErrorActivity extends AppCompatActivity {
 
     private Handler mHandler = new Handler();
     private int sign_error_ttl;
+
+    private TextView security_sign_result;
     private TextView security_sign_error_prompt;
 
     @Override
@@ -32,6 +41,43 @@ public class SignErrorActivity extends AppCompatActivity {
         }
         setContentView(R.layout.security_signautre_error);
 
+        //应用信息
+        security_sign_result = findViewById(R.id.security_sign_result);
+        StringBuilder sb = new StringBuilder(512);
+        sb.append("时间:").append("\n")
+                .append(new SimpleDateFormat("yyyy-MM-dd HH:MM:SS").format(new Date(System.currentTimeMillis()))).append("\n\n");
+
+        sb.append("包名:").append("\n")
+            .append(getApplication().getPackageName()).append("\n\n");
+
+        sb.append("应用信息:").append("\n")
+                .append(getAppSummaryInfo()).append("\n\n");
+
+        sb.append("签名信息:").append("\n")
+            .append("MD5: ").append("\n").append(SignatureUtil.getMd5(this)).append("\n")
+            .append("SHA-1: ").append("\n").append(SignatureUtil.getSha1(this)).append("\n")
+            .append("SHA-256: ").append("\n").append(SignatureUtil.getSha256(this)).append("\n");
+        final String result = sb.toString();
+        security_sign_result.setText(result);
+
+        View.OnClickListener listener = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (android.os.Build.VERSION.SDK_INT > 11) {
+                    android.content.ClipboardManager c = (android.content.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    c.setText(result);
+                } else {
+                    android.text.ClipboardManager c = (android.text.ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                    c.setText(result);
+                }
+                Toast.makeText(getApplicationContext(),"信息已复制",Toast.LENGTH_SHORT).show();
+            }
+        };
+        security_sign_result.setOnClickListener(listener);
+        findViewById(R.id.security_sign_result_click).setOnClickListener(listener);
+
+
+        //倒计时信息
         security_sign_error_prompt = findViewById(R.id.security_sign_error_prompt);
         mHandler.post(new Runnable() {
             @Override
@@ -50,6 +96,48 @@ public class SignErrorActivity extends AppCompatActivity {
                 mHandler.postDelayed(this,1000);
             }
         });
+    }
+
+    public String getAppSummaryInfo(){
+//        String phoneInfo = "Product: " + android.os.Build.PRODUCT +"\n";
+//        phoneInfo += ", CPU_ABI: " + android.os.Build.CPU_ABI +"\n";
+//        phoneInfo += ", TAGS: " + android.os.Build.TAGS +"\n";
+//        phoneInfo += ", VERSION_CODES.BASE: " + android.os.Build.VERSION_CODES.BASE +"\n";
+//        phoneInfo += ", MODEL: " + android.os.Build.MODEL +"\n";
+//        phoneInfo += ", SDK: " + android.os.Build.VERSION.SDK +"\n";
+//        phoneInfo += ", VERSION.RELEASE: " + android.os.Build.VERSION.RELEASE +"\n";
+//        phoneInfo += ", DEVICE: " + android.os.Build.DEVICE +"\n";
+//        phoneInfo += ", DISPLAY: " + android.os.Build.DISPLAY +"\n";
+//        phoneInfo += ", BRAND: " + android.os.Build.BRAND +"\n";
+//        phoneInfo += ", BOARD: " + android.os.Build.BOARD +"\n";
+//        phoneInfo += ", FINGERPRINT: " + android.os.Build.FINGERPRINT +"\n";
+//        phoneInfo += ", ID: " + android.os.Build.ID +"\n";
+//        phoneInfo += ", MANUFACTURER: " + android.os.Build.MANUFACTURER +"\n";
+//        phoneInfo += ", USER: " + android.os.Build.USER;
+
+        String versionName = null;
+        int    versionCode = 0;
+        String brand = android.os.Build.BRAND;
+        String model = android.os.Build.MODEL;
+        String CPU_ABI = android.os.Build.CPU_ABI;
+
+        try {
+            PackageManager pm = getPackageManager();
+            PackageInfo pi  = pm.getPackageInfo(getPackageName(), 0);
+            versionName = pi.versionName;
+            versionCode = pi.versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        StringBuilder sb = new StringBuilder(256);
+        sb.append("versionName: ").append(versionName).append("\n");
+        sb.append("versionCode: ").append(versionCode).append("\n");
+        sb.append("brand: ").append(brand).append("\n");
+        sb.append("model: ").append(model).append("\n");
+        sb.append("CPU_ABI: ").append(CPU_ABI);
+
+        return sb.toString();
     }
 
     @Override
