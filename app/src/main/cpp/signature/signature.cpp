@@ -27,7 +27,7 @@ extern "C" {
         };
 
         const char md5SignEncrypt0xff[][48]={
-            "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:0F",//ndk测试
+            "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
             "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC"//陌遇测试
         };
 
