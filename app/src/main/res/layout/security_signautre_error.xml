@@ -35,8 +35,9 @@
 
             <TextView
                 android:id="@+id/security_sign_result_click"
-                android:layout_width="100dp"
+                android:layout_width="wrap_content"
                 android:layout_height="44dp"
+                android:minWidth="100dp"
                 android:layout_alignRight="@id/security_sign_result"
                 android:layout_alignBottom="@id/security_sign_result"
                 android:background="@drawable/security_sign_copy_bg"
@@ -44,7 +45,7 @@
                 android:padding="12dp"
                 android:textColor="#FFFFFF"
                 android:textSize="14sp"
-                android:text="点击复制"/>
+                android:text="点击复制信息/手机截屏保存信息"/>
 
             <TextView
                 android:id="@+id/security_sign_error_prompt"
@@ -61,7 +62,7 @@
                 android:textSize="16sp"
                 android:visibility="invisible"
                 tools:visibility="visible"
-                tools:text="⚠ 签名校验失败， 应用将在 10 秒后关闭应用，请前往官方下载正版应用"/>
+                tools:text="⚠ 签名校验失败， 应用将在 15 秒后关闭应用，请前往官方下载正版应用"/>
         </RelativeLayout>
     </FrameLayout>
 
