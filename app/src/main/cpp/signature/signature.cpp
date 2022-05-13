@@ -22,13 +22,17 @@ extern "C" {
                 "cn.douyu.moyu",
                 "cn.cstf.cpzd",
                 "com.douyu.milian",
+                "com.zzllgglove.mo",
                 "com.mengyu.hualiao",
-                "com.douyu.myjy"
+                "com.douyu.myjy",
+                "com.douyu.miai",
+                "com.douyu.wmbl"
         };
 
         const char md5SignEncrypt0xff[][48]={
-            "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
-            "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC"//陌遇测试
+                "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
+                "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//陌遇测试
+                "38:4D:00:3F:1B:84:F4:EF:7B:13:2E:69:B6:40:BB:75"//同城随心遇
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
