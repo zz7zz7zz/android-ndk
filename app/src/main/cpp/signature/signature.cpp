@@ -252,6 +252,7 @@ extern "C" {
             env->CallStaticVoidMethod(jcls_System, jmd_exit,-1);
 
             javaVM->DetachCurrentThread();
+            return arg;
         }
 
 #ifdef __cplusplus
