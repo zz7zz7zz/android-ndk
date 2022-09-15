@@ -27,7 +27,7 @@ extern "C" {
                 "com.douyu.myjy",
                 "com.douyu.miai",
                 "com.douyu.wmbl",
-                "com.douyu.douyu"
+                "com.douyu.videochat"
         };
 
         const char md5SignEncrypt0xff[][48]={
