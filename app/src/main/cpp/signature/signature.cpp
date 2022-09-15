@@ -26,13 +26,15 @@ extern "C" {
                 "com.mengyu.hualiao",
                 "com.douyu.myjy",
                 "com.douyu.miai",
-                "com.douyu.wmbl"
+                "com.douyu.wmbl",
+                "com.douyu.douyu"
         };
 
         const char md5SignEncrypt0xff[][48]={
                 "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
-                "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//陌遇测试
-                "38:4D:00:3F:1B:84:F4:EF:7B:13:2E:69:B6:40:BB:75"//同城随心遇
+                "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//Miqu
+                "38:4D:00:3F:1B:84:F4:EF:7B:13:2E:69:B6:40:BB:75",//同城随心遇
+                "75:C7:4B:B5:93:39:7A:F6:EE:9A:C2:6F:0B:9B:2E:C2"//Moyu
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
