@@ -36,7 +36,7 @@ extern "C" {
                 "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//Miqu
                 "38:4D:00:3F:1B:84:F4:EF:7B:13:2E:69:B6:40:BB:75",//同城随心遇
                 "75:C7:4B:B5:93:39:7A:F6:EE:9A:C2:6F:0B:9B:2E:C2",//Moyu
-                "7C:3C:92:6C:60:BF:B9:68:27:92:58:2C:8C:66:34:99"
+                "28:2F:75:89:02:2A:A7:1E:32:67:FB:23:68:85:DC:A1"//cpzd
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
