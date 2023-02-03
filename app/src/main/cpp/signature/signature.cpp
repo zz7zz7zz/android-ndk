@@ -27,16 +27,29 @@ extern "C" {
                 "com.douyu.myjy",
                 "com.douyu.miai",
                 "com.douyu.wmbl",
-                "com.douyu.videochat",
-                "cn.cstf.yhjy"
+                "cn.cstf.yhjy",//cpzd
+                "com.douyu.videochat",//海外kimi
+                "com.zchatu.chatu",//海外chatu
+                "cn.douyuu.miqu",//声吧以及马甲包
+                "cn.douyuu.miqu",
+                "cn.dylovemm.csyh",
+                "cn.qlwb.qlwb",
+                "cn.hcykeji.pia",
+                "cn.tantady.tt",
+                "cn.innogeek.cp",
+                "cn.xinzepin.yy",
+                "com.yinban.ccyy",
+                "com.xnny.xnny",
         };
 
         const char md5SignEncrypt0xff[][48]={
                 "AF:52:DA:62:DF:7D:D3:F1:F8:DE:88:07:B4:04:D0:00",//ndk测试
-                "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//Miqu
+                "D6:FF:2F:C9:98:C3:27:0E:3D:FA:20:5B:58:0F:01:CC",//Miqu、海外
                 "38:4D:00:3F:1B:84:F4:EF:7B:13:2E:69:B6:40:BB:75",//同城随心遇
                 "75:C7:4B:B5:93:39:7A:F6:EE:9A:C2:6F:0B:9B:2E:C2",//Moyu
-                "28:2F:75:89:02:2A:A7:1E:32:67:FB:23:68:85:DC:A1"//cpzd
+                "28:2F:75:89:02:2A:A7:1E:32:67:FB:23:68:85:DC:A1",//cpzd
+                "27:60:0C:41:21:23:EC:CF:39:92:80:58:F8:8B:26:D3",//海外chatu
+                "FF:24:80:45:34:61:6B:50:D7:19:92:04:24:CA:7A:08"//虚拟女友
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
