@@ -40,7 +40,7 @@ extern "C" {
                 "cn.xinzepin.yy",
                 "com.yinban.ccyy",
                 "com.xnny.xnny",
-                "com.hy.hobichat"
+                "com.inhobichat.hobichat"
         };
 
         const char md5SignEncrypt0xff[][48]={
