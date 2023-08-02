@@ -50,7 +50,8 @@ extern "C" {
                 "75:C7:4B:B5:93:39:7A:F6:EE:9A:C2:6F:0B:9B:2E:C2",//Moyu
                 "28:2F:75:89:02:2A:A7:1E:32:67:FB:23:68:85:DC:A1",//cpzd
                 "27:60:0C:41:21:23:EC:CF:39:92:80:58:F8:8B:26:D3",//海外chatu
-                "FF:24:80:45:34:61:6B:50:D7:19:92:04:24:CA:7A:08"//虚拟女友
+                "FF:24:80:45:34:61:6B:50:D7:19:92:04:24:CA:7A:08",//虚拟女友
+                "18:71:25:18:78:95:96:DE:DB:8D:70:E9:BF:6F:B0:29",
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
