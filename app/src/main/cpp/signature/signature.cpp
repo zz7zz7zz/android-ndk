@@ -39,7 +39,8 @@ extern "C" {
                 "cn.innogeek.cp",
                 "cn.xinzepin.yy",
                 "com.yinban.ccyy",
-                "com.xnny.xnny"
+                "com.xnny.xnny",
+                "com.hy.hobichat"
         };
 
         const char md5SignEncrypt0xff[][48]={
