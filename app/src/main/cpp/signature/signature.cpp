@@ -51,7 +51,8 @@ extern "C" {
                 "28:2F:75:89:02:2A:A7:1E:32:67:FB:23:68:85:DC:A1",//cpzd
                 "27:60:0C:41:21:23:EC:CF:39:92:80:58:F8:8B:26:D3",//海外chatu
                 "FF:24:80:45:34:61:6B:50:D7:19:92:04:24:CA:7A:08",//虚拟女友
-                "18:71:25:18:78:95:96:DE:DB:8D:70:E9:BF:6F:B0:29",
+                "18:71:25:18:78:95:96:DE:DB:8D:70:E9:BF:6F:B0:29",//hobichat1
+                "98:F8:FF:33:18:BA:AB:8A:3C:AB:D3:E7:CC:3D:8F:06",//hobichat2
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
