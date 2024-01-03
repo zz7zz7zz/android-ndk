@@ -40,7 +40,10 @@ extern "C" {
                 "cn.xinzepin.yy",
                 "com.yinban.ccyy",
                 "com.xnny.xnny",
-                "com.inhobichat.hobichat"
+                "com.inhobichat.hobichat",
+                "com.insama.sama",
+                "com.samavoice.im",
+                "com.bdxq.bdxq"
         };
 
         const char md5SignEncrypt0xff[][48]={
@@ -53,6 +56,8 @@ extern "C" {
                 "FF:24:80:45:34:61:6B:50:D7:19:92:04:24:CA:7A:08",//虚拟女友
                 "18:71:25:18:78:95:96:DE:DB:8D:70:E9:BF:6F:B0:29",//hobichat1
                 "98:F8:FF:33:18:BA:AB:8A:3C:AB:D3:E7:CC:3D:8F:06",//hobichat2
+                "DD:20:02:82:C4:9F:8E:C7:A6:5B:34:4F:F0:F4:58:DC",//samachat
+                "E7:BB:8B:32:2D:80:4B:A3:62:D8:A3:8C:14:73:97:DF",//starchat
         };
 
         void  on_callback_verify_failed(JNIEnv *env,jclass jcls_Context ,jobject m_context);
